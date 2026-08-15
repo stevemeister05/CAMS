@@ -1,8 +1,8 @@
-using CAMS.Models;
+using CAMS.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
-namespace CAMS.Controllers
+namespace CAMS.Web.Controllers
 {
 	public class HomeController : Controller
 	{

@@ -1,3 +1,7 @@
 <Solution>
-  <Project Path="CAMS/CAMS.csproj" />
+  <Project Path="../CommonCore/Common.Core.csproj" />
+  <Project Path="CAMS.Application/CAMS.Application.csproj" />
+  <Project Path="CAMS.Domain/CAMS.Domain.csproj" />
+  <Project Path="CAMS.Infrastructure/CAMS.Infrastructure.csproj" />
+  <Project Path="CAMS/CAMS.Web.csproj" />
 </Solution>
