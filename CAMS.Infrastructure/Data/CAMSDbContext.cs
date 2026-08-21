@@ -1,4 +1,5 @@
-﻿using CAMS.Domain.Entities;
+﻿using CAMS.Application.Common;
+using CAMS.Domain.Entities;
 using CAMS.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -7,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace CAMS.Infrastructure.Data;
 
 public class CAMSDBContext
-	: IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
+	: IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>, IUnitOfWork
 {
 	public CAMSDBContext(
 		DbContextOptions<CAMSDBContext> options)
@@ -17,22 +18,28 @@ public class CAMSDBContext
 
 	public DbSet<Member> Members => Set<Member>();
 
-	public DbSet<RegistrationRequest> RegistrationRequests =>
-		Set<RegistrationRequest>();
+	public DbSet<RegistrationRequest> RegistrationRequests => Set<RegistrationRequest>();
 
-	public DbSet<OtpVerification> OtpVerifications =>
-		Set<OtpVerification>();
+	public DbSet<OtpVerification> OtpVerifications => Set<OtpVerification>();
 
 	public DbSet<Event> Events => Set<Event>();
 
-	public DbSet<EventSchedule> EventSchedules =>
-		Set<EventSchedule>();
+	public DbSet<EventSchedule> EventSchedules => Set<EventSchedule>();
 
-	public DbSet<Attendance> Attendances =>
-		Set<Attendance>();
+	public DbSet<Attendance> Attendances => Set<Attendance>();
 
-	public DbSet<SystemSetting> SystemSettings =>
-		Set<SystemSetting>();
+	public DbSet<SystemSetting> SystemSettings => Set<SystemSetting>();
+
+	public async Task<IUnitOfWorkTransaction> BeginTransactionAsync(
+		CancellationToken cancellationToken = default)
+	{
+		var transaction =
+			await Database.BeginTransactionAsync(
+				cancellationToken);
+
+		return new EfCoreUnitOfWorkTransaction(
+			transaction);
+	}
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{

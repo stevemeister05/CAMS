@@ -45,10 +45,16 @@ public class EventScheduleConfiguration
 		builder.Property(x => x.DayOfWeek)
 			.IsRequired(false);
 
-		builder.Property(x => x.StartDate)
+		builder.Property(x => x.StartDay)
 			.IsRequired(false);
 
-		builder.Property(x => x.EndDate)
+		builder.Property(x => x.StartMonth)
+			.IsRequired(false);
+
+		builder.Property(x => x.EndDay)
+			.IsRequired(false);
+
+		builder.Property(x => x.EndMonth)
 			.IsRequired(false);
 
 		builder.Property(x => x.CreatedAt)

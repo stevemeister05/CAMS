@@ -143,8 +143,11 @@ namespace CAMS.Infrastructure.Migrations
                     b.Property<int?>("DayOfWeek")
                         .HasColumnType("int");
 
-                    b.Property<DateOnly?>("EndDate")
-                        .HasColumnType("date");
+                    b.Property<int?>("EndDay")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EndMonth")
+                        .HasColumnType("int");
 
                     b.Property<TimeOnly>("EndTime")
                         .HasColumnType("time");
@@ -160,8 +163,11 @@ namespace CAMS.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<DateOnly?>("StartDate")
-                        .HasColumnType("date");
+                    b.Property<int?>("StartDay")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StartMonth")
+                        .HasColumnType("int");
 
                     b.Property<TimeOnly>("StartTime")
                         .HasColumnType("time");
@@ -312,6 +318,10 @@ namespace CAMS.Infrastructure.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("RegisteredAt")
                         .HasColumnType("datetime2");
 
@@ -391,6 +401,9 @@ namespace CAMS.Infrastructure.Migrations
 
                     b.Property<Guid?>("MemberId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("MustChangePassword")
+                        .HasColumnType("bit");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)

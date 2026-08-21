@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CAMS.Infrastructure.Migrations
 {
     [DbContext(typeof(CAMSDBContext))]
-    [Migration("20260815100519_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260821095435_AddMustChangePasswordToApplicationUser")]
+    partial class AddMustChangePasswordToApplicationUser
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -146,8 +146,11 @@ namespace CAMS.Infrastructure.Migrations
                     b.Property<int?>("DayOfWeek")
                         .HasColumnType("int");
 
-                    b.Property<DateOnly?>("EndDate")
-                        .HasColumnType("date");
+                    b.Property<int?>("EndDay")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EndMonth")
+                        .HasColumnType("int");
 
                     b.Property<TimeOnly>("EndTime")
                         .HasColumnType("time");
@@ -163,8 +166,11 @@ namespace CAMS.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<DateOnly?>("StartDate")
-                        .HasColumnType("date");
+                    b.Property<int?>("StartDay")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StartMonth")
+                        .HasColumnType("int");
 
                     b.Property<TimeOnly>("StartTime")
                         .HasColumnType("time");
@@ -394,6 +400,9 @@ namespace CAMS.Infrastructure.Migrations
 
                     b.Property<Guid?>("MemberId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("MustChangePassword")
+                        .HasColumnType("bit");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)

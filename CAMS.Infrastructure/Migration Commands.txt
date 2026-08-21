@@ -1,5 +1,7 @@
-﻿Add-Migration InitialCreate -Context CAMSDbContext -Project CAMS.Infrastructure -StartupProject CAMS.Web
+﻿// Add Migration
+Add-Migration InitialCreate -Context CAMSDbContext -Project CAMS.Infrastructure -StartupProject CAMS.Web
 
+// Update Database
 Update-Database -Context CAMSDbContext -Project CAMS.Infrastructure -StartupProject CAMS.Web
 
 

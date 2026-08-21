@@ -64,8 +64,10 @@ namespace CAMS.Infrastructure.Migrations
                     AttendanceTimeOutStart = table.Column<TimeOnly>(type: "time", nullable: false),
                     AttendanceTimeOutEnd = table.Column<TimeOnly>(type: "time", nullable: false),
                     DayOfWeek = table.Column<int>(type: "int", nullable: true),
-                    StartDate = table.Column<DateOnly>(type: "date", nullable: true),
-                    EndDate = table.Column<DateOnly>(type: "date", nullable: true),
+                    StartMonth = table.Column<int>(type: "int", nullable: true),
+                    StartDay = table.Column<int>(type: "int", nullable: true),
+                    EndMonth = table.Column<int>(type: "int", nullable: true),
+                    EndDay = table.Column<int>(type: "int", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },

@@ -16,6 +16,8 @@ public class RegistrationRequest : BaseEntity
 	public DateOnly? BirthDate { get; set; }
 	public string? Gender { get; set; }
 
+	public string PasswordHash { get; set; } = string.Empty;
+
 	public RegistrationStatus Status { get; set; }
 
 	public DateTime RegisteredAt { get; set; }

@@ -25,7 +25,11 @@ public class EventSchedule : BaseEntity
 	public DayOfWeek? DayOfWeek { get; set; }
 
 	// Used for seasonal schedules such as Misa de Gallo
-	public DateOnly? StartDate { get; set; }
-	public DateOnly? EndDate { get; set; }
+	public int? StartMonth { get; set; }
+	public int? StartDay { get; set; }
+
+	public int? EndMonth { get; set; }
+	public int? EndDay { get; set; }
+
 	public DateTime? UpdatedAt { get; set; }
 }
