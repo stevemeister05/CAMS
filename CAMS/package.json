@@ -1,7 +1,7 @@
 {
   "private": true,
-  "name": "steex",
-  "version": "1.4.0",
+  "name": "CAMS",
+  "version": "1.0.0",
   "description": "",
   "main": "gulpfile.js",
   "author": "Themesbrand",
