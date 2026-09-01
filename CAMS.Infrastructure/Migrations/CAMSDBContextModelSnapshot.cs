@@ -37,7 +37,7 @@ namespace CAMS.Infrastructure.Migrations
                     b.Property<Guid>("MemberId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("TimeIn")
+                    b.Property<DateTime>("TimeIn")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("TimeInMethod")
@@ -56,12 +56,44 @@ namespace CAMS.Infrastructure.Migrations
 
                     b.HasIndex("EventId");
 
-                    b.HasIndex("MemberId");
-
                     b.HasIndex("MemberId", "EventId")
                         .IsUnique();
 
-                    b.ToTable("Attendances");
+                    b.ToTable("Attendances", (string)null);
+                });
+
+            modelBuilder.Entity("CAMS.Domain.Entities.AttendanceQrSession", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Action")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("EventId", "Action")
+                        .IsUnique();
+
+                    b.ToTable("AttendanceQrSessions", (string)null);
                 });
 
             modelBuilder.Entity("CAMS.Domain.Entities.Event", b =>
@@ -116,7 +148,7 @@ namespace CAMS.Infrastructure.Migrations
 
                     b.HasIndex("EventDate", "Type");
 
-                    b.ToTable("Events");
+                    b.ToTable("Events", (string)null);
                 });
 
             modelBuilder.Entity("CAMS.Domain.Entities.EventSchedule", b =>
@@ -179,7 +211,7 @@ namespace CAMS.Infrastructure.Migrations
 
                     b.HasIndex("EventType", "IsActive");
 
-                    b.ToTable("EventSchedules");
+                    b.ToTable("EventSchedules", (string)null);
                 });
 
             modelBuilder.Entity("CAMS.Domain.Entities.Member", b =>
@@ -232,7 +264,7 @@ namespace CAMS.Infrastructure.Migrations
                     b.HasIndex("MobileNumber")
                         .IsUnique();
 
-                    b.ToTable("Members");
+                    b.ToTable("Members", (string)null);
                 });
 
             modelBuilder.Entity("CAMS.Domain.Entities.OtpVerification", b =>
@@ -273,7 +305,7 @@ namespace CAMS.Infrastructure.Migrations
 
                     b.HasIndex("MobileNumber", "Purpose", "CreatedAt");
 
-                    b.ToTable("OtpVerifications");
+                    b.ToTable("OtpVerifications", (string)null);
                 });
 
             modelBuilder.Entity("CAMS.Domain.Entities.RegistrationRequest", b =>
@@ -339,7 +371,7 @@ namespace CAMS.Infrastructure.Migrations
 
                     b.HasIndex("MobileNumber", "Status");
 
-                    b.ToTable("RegistrationRequests");
+                    b.ToTable("RegistrationRequests", (string)null);
                 });
 
             modelBuilder.Entity("CAMS.Domain.Entities.SystemSetting", b =>
@@ -370,7 +402,7 @@ namespace CAMS.Infrastructure.Migrations
                     b.HasIndex("Key")
                         .IsUnique();
 
-                    b.ToTable("SystemSettings");
+                    b.ToTable("SystemSettings", (string)null);
                 });
 
             modelBuilder.Entity("CAMS.Infrastructure.Identity.ApplicationUser", b =>
@@ -597,6 +629,17 @@ namespace CAMS.Infrastructure.Migrations
                     b.Navigation("Event");
 
                     b.Navigation("Member");
+                });
+
+            modelBuilder.Entity("CAMS.Domain.Entities.AttendanceQrSession", b =>
+                {
+                    b.HasOne("CAMS.Domain.Entities.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
                 });
 
             modelBuilder.Entity("CAMS.Infrastructure.Identity.ApplicationUser", b =>

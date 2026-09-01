@@ -1,25 +1,42 @@
-using CAMS.Web.Models;
+using CAMS.Domain.Constants;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
-namespace CAMS.Web.Controllers
+namespace CAMS.Web.Controllers;
+
+public class HomeController : Controller
 {
-	public class HomeController : Controller
+	[HttpGet("/")]
+	public IActionResult Index()
 	{
-		public IActionResult Index()
+		if (
+			User.Identity?.IsAuthenticated !=
+			true)
 		{
-			return View();
+			return Redirect(
+				"/auth/login");
 		}
 
-		public IActionResult Privacy()
+		if (
+			User.IsInRole(
+				ApplicationRoles.Administrator) ||
+			User.IsInRole(
+				ApplicationRoles.AttendanceStaff)
+		)
 		{
-			return View();
+			return Redirect(
+				"/admin");
 		}
 
-		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-		public IActionResult Error()
+		if (
+			User.IsInRole(
+				ApplicationRoles.Member)
+		)
 		{
-			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+			return Redirect(
+				"/portal");
 		}
+
+		return Redirect(
+			"/auth/access-denied");
 	}
 }

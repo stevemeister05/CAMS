@@ -1,0 +1,370 @@
+﻿@model CAMS.Application.Authentication.LoginRequest
+
+@{
+    ViewBag.Title = "Signin";
+    Layout = "~/Views/Shared/_BlankLayout.cshtml";
+}
+<section class="auth-page-wrapper py-5 position-relative d-flex align-items-center justify-content-center min-vh-100">
+    <div class="container">
+        <div class="text-center mb-4">
+
+            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary mb-3"
+                 style="width: 64px; height: 64px;">
+
+                <i class="ri-community-line fs-2"></i>
+
+            </div>
+
+            <h2 class="fw-bold mb-1">
+                Sta. Barbara Chapel
+            </h2>
+
+            <p class="text-muted mb-0">
+                Member Registration
+            </p>
+
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-xl-5">
+                <div class="card mb-0">
+                    <div class="row g-0 align-items-center">
+                        <div class="col mx-auto">
+                            <div class="card mb-0 border-0 shadow-none mb-0">
+                                <div class="card-body p-sm-5 m-lg-4">
+                                    <div class="p-2 mt-5">
+                                        <form id="login-form">
+                                            <input type="hidden" id="return-url" value="@ViewData["ReturnUrl"]" />
+                                            <div id="login-error"
+                                                 class="alert alert-danger d-none"
+                                                 role="alert">
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label asp-for="UserName" class="form-label">
+                                                    Username <span class="text-danger">*</span>
+                                                </label>
+
+                                                <input asp-for="UserName"
+                                                       class="form-control"
+                                                       placeholder="Enter username"
+                                                       autocomplete="username"
+                                                       required />
+
+                                                <span asp-validation-for="UserName"
+                                                      class="text-danger">
+                                                </span>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <div class="float-end">
+                                                    <a asp-action="ForgotPassword"
+                                                       asp-controller="Auth"
+                                                       class="text-muted">
+                                                        Forgot password?
+                                                    </a>
+                                                </div>
+
+                                                <label asp-for="Password" class="form-label">
+                                                    Password <span class="text-danger">*</span>
+                                                </label>
+
+                                                <div class="position-relative auth-pass-inputgroup mb-3">
+                                                    <input asp-for="Password"
+                                                           type="password"
+                                                           class="form-control pe-5 password-input"
+                                                           placeholder="Enter password"
+                                                           autocomplete="current-password"
+                                                           required />
+
+                                                    <button class="btn btn-link position-absolute end-0 top-0
+                                                        text-decoration-none text-muted password-addon"
+                                                            type="button"
+                                                            id="password-addon"
+                                                            aria-label="Show password">
+                                                        <i class="ri-eye-fill align-middle"></i>
+                                                    </button>
+
+                                                    <span asp-validation-for="Password"
+                                                          class="text-danger">
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-check">
+                                                <input asp-for="RememberMe"
+                                                       class="form-check-input"
+                                                       type="checkbox"/>
+
+                                                <label asp-for="RememberMe"
+                                                       class="form-check-label">
+                                                    Remember me
+                                                </label>
+                                            </div>
+
+                                            <div class="mt-4">
+                                                <button id="login-button"
+                                                        class="btn btn-primary w-100"
+                                                        type="submit">
+                                                    <span id="login-button-text">
+                                                        Sign In
+                                                    </span>
+
+                                                    <span id="login-spinner"
+                                                          class="spinner-border spinner-border-sm d-none"
+                                                          role="status"
+                                                          aria-hidden="true">
+                                                    </span>
+                                                </button>
+                                            </div>
+                                        </form>
+                                        <div class="text-center mt-5">
+                                            <p class="mb-0"> Don't have an account ? 
+                                                <a asp-area="Portal"
+                                                    asp-controller="Account"
+                                                    asp-action="Register" class="fw-semibold text-secondary text-decoration-underline"> SignUp</a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div><!-- end card body -->
+                            </div><!-- end card -->
+                        </div>
+                        <!--end col-->
+                    </div>
+                    <!--end row-->
+                </div>
+            </div>
+            <!--end col-->
+        </div>
+        <!--end row-->
+    </div>
+    <!--end container-->
+</section>
+@section Scripts{
+    
+    <script src="~/assets/js/pages/password-addon.init.js" asp-append-version="true"></script>
+
+    <!--Swiper slider js-->
+    <script src="~/assets/libs/swiper/swiper-bundle.min.js" asp-append-version="true"></script>
+
+    <!-- swiper.init js -->
+    <script src="~/assets/js/pages/swiper.init.js" asp-append-version="true"></script>
+    <partial name="_ValidationScriptsPartial" />
+    
+    <script>
+        
+
+        (() => {
+
+            const form = document.getElementById("login-form");
+            const passwordInput = document.getElementById("password-input");
+            const passwordAddon = document.getElementById("password-addon");
+            const loginButton = document.getElementById("login-button");
+            const loginButtonText = document.getElementById("login-button-text");
+            const loginSpinner = document.getElementById("login-spinner");
+            const loginError = document.getElementById("login-error");
+
+            // PASSWORD VISIBILITY
+            passwordAddon?.addEventListener(
+                "click",
+                () => {
+
+                    if (passwordInput.type === "password") {
+                        passwordInput.type = "text";
+                        passwordAddon
+                            .querySelector("i")
+                            .classList
+                            .replace(
+                                "ri-eye-fill",
+                                "ri-eye-off-fill");
+
+                        passwordAddon.setAttribute(
+                            "aria-label",
+                            "Hide password");
+                    }
+                    else {
+                        passwordInput.type = "password";
+
+                        passwordAddon
+                            .querySelector("i")
+                            .classList
+                            .replace("ri-eye-off-fill", "ri-eye-fill");
+
+                        passwordAddon.setAttribute("aria-label", "Show password");
+                    }
+                });
+
+
+            // LOGIN
+            form?.addEventListener(
+                "submit",
+                async (event) => {
+
+                    event.preventDefault();
+
+                    // Reset previous error
+                    loginError.classList.add("d-none");
+                    loginError.textContent = "";
+
+                    // Disable button
+                    loginButton.disabled = true;
+
+                    loginButtonText.textContent = "Signing in...";
+
+                    loginSpinner.classList.remove("d-none");
+
+
+                    // Request
+                    const request = {
+                        username: document.getElementById("UserName").value,
+                        password: document.getElementById("Password").value,
+                        rememberMe: document.getElementById("RememberMe").checked
+                    };
+
+
+                    try {
+
+                        /*
+                         * Login is itself an authentication endpoint.
+                         *
+                         * Therefore, a 401 here means invalid
+                         * credentials and should NOT redirect back
+                         * to the login page.
+                         */
+                        const response =
+                            await camsApi.fetch("/api/v1/auth/login",
+                            {
+                                method: "POST",
+                                handleAuthErrors: false,
+                                body: JSON.stringify(request)
+                            });
+
+
+                        // Handle unsuccessful login
+                        if (!response.ok) {
+
+                            let message = "Unable to sign in.";
+
+                            try {
+
+                                const error =
+                                    await camsApi.readProblem(response);
+                                message =
+                                    error?.detail ??
+                                    error?.message ??
+                                    message;
+                            }
+                            catch {
+                                // Ignore invalid error response.
+                            }
+
+                            throw new Error(message);
+                        }
+
+
+                        // Login successful
+                        const result = await response.json();
+
+
+                        /*
+                         * The backend can tell us whether the
+                         * authenticated user must change their
+                         * password.
+                         */
+                        if (result.mustChangePassword) {
+                            window.location.href =  "/auth/change-password";
+                            return;
+                        }
+
+
+                        // Return to requested page
+                        const returnUrl = getSafeReturnUrl();
+
+                        if (returnUrl) {
+
+                            window.location.assign(returnUrl);
+
+                            return;
+                        }
+
+                        // Default destination
+                        window.location.href = getDefaultDestination(result.roles);
+                    }
+                    catch (error) {
+
+                        loginError.textContent =
+                            error.message ??
+                            "Unable to sign in.";
+
+                        loginError.classList.remove("d-none");
+
+                        loginButton.disabled = false;
+
+                        loginButtonText.textContent = "Sign In";
+
+                        loginSpinner.classList.add("d-none");
+                    }
+                });
+
+            function getDefaultDestination(
+                roles) {
+
+                roles =
+                    roles ?? [];
+
+                if (
+                    roles.includes(
+                        "Administrator") ||
+                    roles.includes(
+                        "AttendanceStaff")
+                ) {
+                    return "/admin";
+                }
+
+                if (
+                    roles.includes(
+                        "Member")
+                ) {
+                    return "/portal";
+                }
+
+                return "/";
+            }
+
+            function getSafeReturnUrl() {
+
+                const returnUrl =
+                    new URLSearchParams(
+                        window.location.search
+                    ).get("returnUrl");
+
+                if (!returnUrl) {
+                    return null;
+                }
+
+                try {
+
+                    const url =
+                        new URL(
+                            returnUrl,
+                            window.location.origin);
+
+                    if (
+                        url.origin !==
+                        window.location.origin
+                    ) {
+                        return null;
+                    }
+
+                    return (
+                        url.pathname +
+                        url.search +
+                        url.hash
+                    );
+                }
+                catch {
+                    return null;
+                }
+            }
+        })();
+    </script>
+}

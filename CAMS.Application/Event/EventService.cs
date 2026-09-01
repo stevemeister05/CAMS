@@ -1,4 +1,5 @@
 ﻿using CAMS.Application.Common;
+using CAMS.Application.Common.Clocking;
 using CAMS.Application.Common.Exceptions;
 using CAMS.Application.Common.Pagination;
 using CAMS.Application.Event.DTOs;
@@ -13,13 +14,15 @@ public class EventService : IEventService
 {
 	private readonly IEventRepository _eventRepository;
 	private readonly IUnitOfWork _unitOfWork;
-
+	private readonly IApplicationClock _clock;
 	public EventService(
 		IEventRepository eventRepository,
-		IUnitOfWork unitOfWork)
+		IUnitOfWork unitOfWork,
+		IApplicationClock clock)
 	{
 		_eventRepository = eventRepository;
 		_unitOfWork = unitOfWork;
+		_clock = clock;
 	}
 
 	public async Task<EventResponse> GetByIdAsync(
@@ -111,7 +114,7 @@ public class EventService : IEventService
 			AttendanceTimeOutEnd =
 				request.AttendanceTimeOutEnd,
 
-			Status = request.Status,
+			Status = EventStatusResolver.Resolve(request.EventDate, request.StartTime, request.EndTime, _clock.LocalNow),
 
 			Description =
 				string.IsNullOrWhiteSpace(request.Description)
@@ -197,14 +200,17 @@ public class EventService : IEventService
 		@event.AttendanceTimeOutEnd =
 			request.AttendanceTimeOutEnd;
 
-		@event.Status = request.Status;
-
 		@event.Description =
 			string.IsNullOrWhiteSpace(request.Description)
 				? null
 				: request.Description.Trim();
 
 		@event.UpdatedAt = DateTime.UtcNow;
+		@event.Status = EventStatusResolver.Resolve(
+			request.EventDate,
+			request.StartTime,
+			request.EndTime,
+			_clock.LocalNow);
 
 		_eventRepository.Update(@event);
 

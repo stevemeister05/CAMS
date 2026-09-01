@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.2.12" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.11">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -19,6 +20,10 @@
     <ProjectReference Include="..\..\CommonCore\Common.Core.csproj" />
     <ProjectReference Include="..\CAMS.Application\CAMS.Application.csproj" />
     <ProjectReference Include="..\CAMS.Infrastructure\CAMS.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\assets\js\qrcodejs\" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,668 @@
+﻿@using CAMS.Domain.Enums
+@model Guid
+
+@{
+	ViewBag.Title =
+		"Event Attendance";
+
+	Layout =
+		"/Views/Shared/_BlankLayout2.cshtml";
+}
+
+
+@section styles {
+
+	<style>
+
+		html,
+		body {
+			height: 100%;
+		}
+
+
+		body {
+			overflow: hidden;
+		}
+
+
+		.attendance-page {
+			height: 100vh;
+			display: flex;
+			flex-direction: column;
+			background: var(--vz-body-bg);
+		}
+
+
+		/* =====================================================
+				   HEADER
+				===================================================== */
+
+		.attendance-header {
+			flex-shrink: 0;
+			background: var(--vz-secondary-bg);
+			border-bottom: 1px solid var(--vz-border-color);
+		}
+
+
+		.event-title {
+			max-width: 600px;
+		}
+
+
+			.event-title h5 {
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+
+
+		/* =====================================================
+				   CONTENT
+				===================================================== */
+
+		.attendance-content {
+			flex: 1;
+			min-height: 0;
+			padding: 1rem;
+		}
+
+
+		.attendance-layout {
+			height: 100%;
+		}
+
+
+		.attendance-panel {
+			height: 100%;
+			min-height: 0;
+			transition: width 0.2s ease;
+		}
+
+
+		.attendance-card {
+			height: 100%;
+			margin-bottom: 0;
+			border: 1px solid var(--vz-border-color);
+			box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+		}
+
+
+		/* =====================================================
+				   QR PANEL
+				===================================================== */
+
+		.qr-card-body {
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			text-align: center;
+			padding: 2rem;
+		}
+
+
+		.event-information {
+			margin-bottom: 1rem;
+		}
+
+
+			.event-information h3 {
+				margin-bottom: 0.35rem;
+			}
+
+
+		.qr-code-wrapper {
+			padding: 1.25rem;
+			background: #fff;
+			border: 1px solid var(--vz-border-color);
+			border-radius: 1rem;
+			box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.06);
+			margin: 1.5rem auto;
+		}
+
+
+		.qr-code-container {
+			width: 320px;
+			height: 320px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+
+			.qr-code-container img,
+			.qr-code-container canvas {
+				display: block;
+				max-width: 100%;
+				max-height: 100%;
+			}
+
+
+		.qr-action-container {
+			min-height: 70px;
+		}
+
+
+		.qr-action-badge {
+			font-size: 0.9rem;
+			padding: 0.55rem 1rem;
+		}
+
+
+		.attendance-mode-buttons
+		.btn {
+			min-width: 130px;
+		}
+
+
+		/* =====================================================
+				   ATTENDANCE PANEL
+				===================================================== */
+
+		.attendance-card-header {
+			flex-shrink: 0;
+		}
+
+
+		.attendance-card-body {
+			min-height: 0;
+			overflow: hidden;
+		}
+
+
+		.attendance-table-container {
+			height: 100%;
+			overflow-y: auto;
+		}
+
+
+		.attendance-table {
+			margin-bottom: 0;
+		}
+
+
+			.attendance-table thead {
+				position: sticky;
+				top: 0;
+				z-index: 2;
+			}
+
+
+			.attendance-table th {
+				background: var(--vz-tertiary-bg);
+			}
+
+
+		.member-name {
+			font-weight: 500;
+		}
+
+
+		/* =====================================================
+				   HIDDEN ATTENDANCE
+				===================================================== */
+
+		#attendance-panel {
+			transition: opacity 0.15s ease;
+		}
+
+
+		/* =====================================================
+				   RESPONSIVE
+				===================================================== */
+
+		@@media (
+					max-width: 991.98px
+				) {
+
+			body {
+				overflow: auto;
+			}
+
+
+			.attendance-page {
+				height: auto;
+				min-height: 100vh;
+			}
+
+
+			.attendance-content {
+				flex: none;
+			}
+
+
+			.attendance-layout {
+				height: auto;
+			}
+
+
+			.attendance-panel {
+				height: auto;
+				min-height: 500px;
+			}
+
+
+			.qr-code-container {
+				width: 280px;
+				height: 280px;
+			}
+
+
+			#attendance-panel {
+				min-height: 500px;
+			}
+		}
+
+
+		@@media (
+					max-width: 575.98px
+				) {
+
+			.attendance-content {
+				padding: 0.75rem;
+			}
+
+
+			.qr-card-body {
+				padding: 1.25rem;
+			}
+
+
+			.qr-code-container {
+				width: 240px;
+				height: 240px;
+			}
+
+
+			.attendance-mode-buttons {
+				width: 100%;
+			}
+
+
+				.attendance-mode-buttons
+				.btn {
+					flex: 1;
+					min-width: 0;
+				}
+		}
+
+	</style>
+}
+
+
+<div id="event-attendance-page"
+	 class="attendance-page"
+	 data-event-id="@Model"
+	 data-action-time-in="@((int)AttendanceAction.TimeIn)"
+	 data-action-time-out="@((int)AttendanceAction.TimeOut)">
+
+
+	<!-- =====================================================
+		 HEADER
+	===================================================== -->
+
+	<div class="attendance-header">
+
+		<div class="container-fluid py-3">
+
+			<div class="d-flex
+				align-items-center
+				justify-content-between
+				gap-3">
+
+
+				<div class="d-flex
+					align-items-center
+					min-width-0">
+
+					<a asp-area="Admin"
+					   asp-controller="Event"
+					   asp-action="Index"
+					   class="btn btn-soft-secondary
+						flex-shrink-0">
+
+						<i class="ri-arrow-left-line
+							align-middle me-1">
+						</i>
+
+						Back to Events
+
+					</a>
+
+
+					<div class="ms-3 event-title">
+
+						<h2 id="page-event"
+							class="mb-0">
+
+							Event Attendance
+
+						</h2>
+
+						<div class="d-flex
+							align-items-center
+							flex-wrap
+							gap-2 mt-1">
+
+							<span id="page-event-date"
+								  class="text-muted fs-sm">
+							</span>
+
+							<span id="page-event-status">
+							</span>
+
+						</div>
+
+					</div>
+
+				</div>
+
+
+				<button type="button"
+						id="toggle-attendance-button"
+						class="btn btn-soft-primary
+					flex-shrink-0">
+
+					<i id="toggle-attendance-icon"
+					   class="ri-layout-right-line
+						align-middle me-1">
+					</i>
+
+					<span id="toggle-attendance-text">
+						Hide Attendance
+					</span>
+
+				</button>
+
+			</div>
+
+		</div>
+
+	</div>
+
+
+	<!-- =====================================================
+		 CONTENT
+	===================================================== -->
+
+	<div class="attendance-content">
+
+		<div class="row g-3 attendance-layout">
+
+
+			<!-- =================================================
+				 QR CODE
+			================================================= -->
+
+			<div id="qr-panel"
+				 class="col-lg-6 attendance-panel">
+
+				<div class="card attendance-card">
+
+					<div class="card-body qr-card-body">
+
+
+						<!-- Event -->
+
+						<div class="event-information">
+
+							<div class="avatar-md mx-auto mb-3">
+
+								<div class="avatar-title
+									bg-primary-subtle
+									text-primary
+									rounded-circle fs-3">
+
+									<i class="ri-qr-scan-2-line">
+									</i>
+
+								</div>
+
+							</div>
+
+
+							<h3 id="qr-event-name">
+								Loading event...
+							</h3>
+
+
+							<p id="qr-event-date"
+							   class="text-muted mb-0">
+							</p>
+
+						</div>
+
+
+						<!-- QR -->
+
+						<div class="qr-code-wrapper">
+
+							<div id="qr-code"
+								 class="qr-code-container">
+
+								<div class="text-muted">
+
+									<div class="spinner-border
+										text-primary"
+										 role="status">
+									</div>
+
+									<div class="mt-3">
+										Loading QR Code...
+									</div>
+
+								</div>
+
+							</div>
+
+						</div>
+
+
+						<!-- Action -->
+
+						<div class="qr-action-container">
+
+							<span id="qr-action"
+								  class="badge
+								bg-primary-subtle
+								text-primary
+								qr-action-badge">
+
+								TIME IN
+
+							</span>
+
+
+							<div id="qr-period"
+								 class="text-muted mt-2">
+							</div>
+
+
+							<div id="qr-expiration"
+								 class="text-danger fs-sm mt-1">
+							</div>
+
+						</div>
+
+
+						<!-- Mode buttons -->
+
+						<div class="mt-4">
+
+							<div class="btn-group
+								attendance-mode-buttons"
+								 role="group">
+
+								<button type="button"
+										id="time-in-button"
+										class="btn btn-primary">
+
+									<i class="ri-login-box-line
+										align-middle me-1">
+									</i>
+
+									Time In
+
+								</button>
+
+
+								<button type="button"
+										id="time-out-button"
+										class="btn btn-soft-primary">
+
+									<i class="ri-logout-box-line
+										align-middle me-1">
+									</i>
+
+									Time Out
+
+								</button>
+
+							</div>
+
+						</div>
+
+
+					</div>
+
+				</div>
+
+			</div>
+
+
+			<!-- =================================================
+				 ATTENDANCE LIST
+			================================================= -->
+
+			<div id="attendance-panel"
+				 class="col-lg-6 attendance-panel">
+
+				<div class="card attendance-card
+					d-flex flex-column">
+
+
+					<div class="card-header
+						attendance-card-header">
+
+						<div class="d-flex
+							align-items-center
+							justify-content-between">
+
+
+							<div>
+
+								<h5 class="card-title mb-1">
+									Current Attendance
+								</h5>
+
+								<p class="text-muted fs-sm mb-0">
+									Live attendance for this event
+								</p>
+
+							</div>
+
+
+							<span id="attendance-count"
+								  class="badge
+								bg-primary-subtle
+								text-primary fs-sm">
+
+								0
+
+							</span>
+
+						</div>
+
+					</div>
+
+
+					<div class="card-body
+						p-0
+						flex-grow-1
+						attendance-card-body">
+
+						<div class="attendance-table-container">
+
+							<table class="table
+								table-hover
+								align-middle
+								attendance-table">
+
+								<thead>
+
+									<tr>
+
+										<th class="ps-3">
+											Member
+										</th>
+
+										<th>
+											Time In
+										</th>
+
+										<th>
+											Time Out
+										</th>
+
+									</tr>
+
+								</thead>
+
+
+								<tbody id="attendance-table-body">
+
+									<tr>
+
+										<td colspan="3"
+											class="text-center
+											text-muted py-5">
+
+											<div class="spinner-border
+												spinner-border-sm
+												me-2"
+												 role="status">
+											</div>
+
+											Loading attendance...
+
+										</td>
+
+									</tr>
+
+								</tbody>
+
+							</table>
+
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
+
+		</div>
+
+	</div>
+
+</div>
+
+
+@section scripts {
+
+	<!-- Attendance-specific libraries only -->
+
+	<script src="~/assets/libs/signalr/dist/browser/signalr.min.js"
+			asp-append-version="true">
+	</script>
+
+	<script src="~/assets/libs/qrcodejs/qrcode.min.js"
+			asp-append-version="true">
+	</script>
+
+	<script src="~/js/pages/admin/event-attendance.js"
+			asp-append-version="true">
+	</script>
+
+}

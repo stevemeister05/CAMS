@@ -3,5 +3,6 @@
 public enum AttendanceMethod
 {
 	QRCode = 1,
-	Manual = 2
+	Fingerprint = 2,
+	Manual = 3
 }

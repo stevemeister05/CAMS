@@ -383,17 +383,13 @@ public class RegistrationService : IRegistrationService
 	{
 		return new RegistrationResponse
 		{
-			RegistrationId =
-				registration.Id,
-
-			MobileNumber =
-				registration.MobileNumber,
-
-			Status =
-				registration.Status,
-
-			RegisteredAt =
-				registration.RegisteredAt
+			RegistrationId = registration.Id,
+			MobileNumber = registration.MobileNumber,
+			FirstName = registration.FirstName,
+			MiddleName = registration.MiddleName,
+			LastName = registration.LastName,
+			Status = registration.Status,
+			RegisteredAt = registration.RegisteredAt
 		};
 	}
 }

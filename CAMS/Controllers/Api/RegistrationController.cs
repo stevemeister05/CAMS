@@ -10,8 +10,8 @@ using Microsoft.AspNetCore.RateLimiting;
 namespace CAMS.Web.Controllers.Api;
 
 [Authorize]
-[Route("api/[controller]")]
-[Route("api/[controller]s")]
+[Route("api/v1/[controller]")]
+[Route("api/v1/[controller]s")]
 [ApiController]
 public class RegistrationController : ControllerBase
 {

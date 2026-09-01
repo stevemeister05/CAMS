@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace CAMS.Application.Registration.DTOs;
 
@@ -24,9 +21,10 @@ public class RegisterRequest
 	[Required]
 	public string Password { get; set; } = string.Empty;
 
-	public string? Address { get; set; }
-
 	public DateOnly? BirthDate { get; set; }
 
 	public string? Gender { get; set; }
+
+	//Exclude this
+	public string? Address { get; set; }
 }

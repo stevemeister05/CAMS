@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CAMS.Web.Controllers.Api;
 
 [Route("api/v1/[controller]")]
+[Route("api/v1/[controller]s")]
 [ApiController]
 [Authorize(Policy = AuthorizationPolicies.PasswordChangeCompleted)]
 public class EventController : ControllerBase

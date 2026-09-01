@@ -22,7 +22,5 @@ public class UpdateEventRequest
 	public TimeOnly AttendanceTimeOutStart { get; set; }
 	public TimeOnly AttendanceTimeOutEnd { get; set; }
 
-	public EventStatus Status { get; set; }
-
 	public string? Description { get; set; }
 }

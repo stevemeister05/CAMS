@@ -1,0 +1,158 @@
+﻿@{
+	ViewBag.Title = "Member Portal";
+	ViewBag.PageTitle = "Portal";
+	ViewBag.pTitle = "MEMBER PORTAL";
+
+	Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+
+	<div class="col-12">
+
+		<div class="card">
+			<div class="card-body">
+
+				<div class="d-flex align-items-center">
+
+					<div class="flex-grow-1">
+
+						<h4 class="card-title mb-1">
+							Welcome to Sta. Barbara Chapel
+						</h4>
+
+						<p class="text-muted mb-0">
+							Manage your profile and chapel attendance
+							from your member portal.
+						</p>
+
+					</div>
+
+					<div class="avatar-lg">
+
+						<div class="avatar-title bg-primary-subtle text-primary rounded-circle fs-2">
+							<i class="ri-community-line"></i>
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
+		</div>
+
+	</div>
+
+
+	<div class="col-xl-4 col-md-6">
+
+		<div class="card">
+			<div class="card-body">
+
+				<div class="avatar-sm mb-3">
+
+					<div class="avatar-title bg-primary-subtle text-primary rounded fs-3">
+						<i class="ri-qr-scan-2-line"></i>
+					</div>
+
+				</div>
+
+				<h5>
+					Scan Attendance
+				</h5>
+
+				<p class="text-muted">
+					Scan the event QR code to record your
+					time-in or time-out.
+				</p>
+
+				<a asp-area="Portal"
+				   asp-controller="Attendance"
+				   asp-action="Scan"
+				   class="btn btn-primary">
+
+					<i class="ri-qr-scan-2-line me-1"></i>
+					Scan QR Code
+
+				</a>
+
+			</div>
+		</div>
+
+	</div>
+
+
+	<div class="col-xl-4 col-md-6">
+
+		<div class="card">
+			<div class="card-body">
+
+				<div class="avatar-sm mb-3">
+
+					<div class="avatar-title bg-success-subtle text-success rounded fs-3">
+						<i class="ri-history-line"></i>
+					</div>
+
+				</div>
+
+				<h5>
+					Attendance History
+				</h5>
+
+				<p class="text-muted">
+					View your previous attendance records
+					and event history.
+				</p>
+
+				<a asp-area="Portal"
+				   asp-controller="Attendance"
+				   asp-action="History"
+				   class="btn btn-soft-success">
+
+					View History
+
+				</a>
+
+			</div>
+		</div>
+
+	</div>
+
+
+	<div class="col-xl-4 col-md-6">
+
+		<div class="card">
+			<div class="card-body">
+
+				<div class="avatar-sm mb-3">
+
+					<div class="avatar-title bg-info-subtle text-info rounded fs-3">
+						<i class="ri-user-line"></i>
+					</div>
+
+				</div>
+
+				<h5>
+					My Profile
+				</h5>
+
+				<p class="text-muted">
+					View and manage your personal member
+					information.
+				</p>
+
+				<a asp-area="Portal"
+				   asp-controller="Account"
+				   asp-action="Profile"
+				   class="btn btn-soft-info">
+
+					View Profile
+
+				</a>
+
+			</div>
+		</div>
+
+	</div>
+
+</div>

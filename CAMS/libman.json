@@ -1,0 +1,20 @@
+{
+  "version": "3.0",
+  "defaultProvider": "unpkg",
+  "libraries": [
+    {
+      "library": "qrcodejs@1.0.0",
+      "destination": "wwwroot/assets/js/qrcodejs/",
+      "files": [
+        "qrcode.min.js"
+      ]
+    },
+    {
+      "library": "@microsoft/signalr@10.0.0",
+      "destination": "wwwroot/assets/libs/signalr/",
+      "files": [
+        "dist/browser/signalr.min.js"
+      ]
+    }
+  ]
+}

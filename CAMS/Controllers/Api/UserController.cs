@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace CAMS.Web.Controllers.Api;
 
 [ApiController]
-[Route("api/users")]
+[Route("api/v1/[controller]")]
+[Route("api/v1/[controller]s")]
 [Authorize]
 public class UserController : ControllerBase
 {

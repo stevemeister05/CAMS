@@ -13,3 +13,11 @@ Update-Database AddMemberPortal -Context CAMSDbContext -Project CAMS.Infrastruct
 
 // Rollback prior to the first migration
 Update-Database 0 -Context CAMSDbContext -Project CAMS.Infrastructure -StartupProject CAMS.Web
+
+
+
+
+
+
+
+Add-Migration MakeTimeInNonNullableInAttendance -Context CAMSDbContext -Project CAMS.Infrastructure -StartupProject CAMS.Web

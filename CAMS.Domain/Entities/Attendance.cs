@@ -7,7 +7,7 @@ public class Attendance : BaseEntity
 	public Guid MemberId { get; set; }
 	public Guid EventId { get; set; }
 
-	public DateTime? TimeIn { get; set; }
+	public DateTime TimeIn { get; set; }
 	public DateTime? TimeOut { get; set; }
 
 	public AttendanceMethod TimeInMethod { get; set; }

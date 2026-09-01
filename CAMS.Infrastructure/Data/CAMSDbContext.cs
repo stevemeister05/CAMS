@@ -26,9 +26,11 @@ public class CAMSDBContext
 
 	public DbSet<EventSchedule> EventSchedules => Set<EventSchedule>();
 
-	public DbSet<Attendance> Attendances => Set<Attendance>();
+	public DbSet<Domain.Entities.Attendance> Attendances => Set<Domain.Entities.Attendance>();
 
 	public DbSet<SystemSetting> SystemSettings => Set<SystemSetting>();
+
+	public DbSet<AttendanceQrSession> AttendanceQrSessions => Set<AttendanceQrSession>();
 
 	public async Task<IUnitOfWorkTransaction> BeginTransactionAsync(
 		CancellationToken cancellationToken = default)

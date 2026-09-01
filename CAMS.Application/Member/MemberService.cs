@@ -1,4 +1,5 @@
 ﻿using CAMS.Application.Common;
+using CAMS.Application.Common.Clocking;
 using CAMS.Application.Common.Exceptions;
 using CAMS.Application.Common.Pagination;
 using CAMS.Application.Common.Validation;
@@ -10,13 +11,16 @@ public sealed class MemberService : IMemberService
 {
 	private readonly IMemberRepository _memberRepository;
 	private readonly IUnitOfWork _unitOfWork;
+	private readonly IApplicationClock _clock;
 
 	public MemberService(
 		IMemberRepository memberRepository,
-		IUnitOfWork unitOfWork)
+		IUnitOfWork unitOfWork,
+		IApplicationClock clock)
 	{
 		_memberRepository = memberRepository;
 		_unitOfWork = unitOfWork;
+		_clock = clock;
 	}
 
 	public async Task<MemberResponse> GetByIdAsync(
@@ -194,6 +198,82 @@ public sealed class MemberService : IMemberService
 			cancellationToken);
 
 		return true;
+	}
+
+	public async Task<MemberResponse> ActivateAsync(
+		Guid id,
+		CancellationToken cancellationToken = default)
+	{
+		var member =
+			await _memberRepository.GetByIdAsync(
+				id,
+				cancellationToken);
+
+		if (member is null)
+		{
+			throw new NotFoundException(
+				"Member was not found.");
+		}
+
+
+		if (member.IsActive)
+		{
+			return MapToResponse(
+				member);
+		}
+
+
+		member.IsActive =
+			true;
+
+		member.UpdatedAt =
+			_clock.UtcNow;
+
+
+		await _unitOfWork.SaveChangesAsync(
+			cancellationToken);
+
+
+		return MapToResponse(
+			member);
+	}
+
+	public async Task<MemberResponse> DeactivateAsync(
+		Guid id,
+		CancellationToken cancellationToken = default)
+	{
+		var member =
+			await _memberRepository.GetByIdAsync(
+				id,
+				cancellationToken);
+
+		if (member is null)
+		{
+			throw new NotFoundException(
+				"Member was not found.");
+		}
+
+
+		if (!member.IsActive)
+		{
+			return MapToResponse(
+				member);
+		}
+
+
+		member.IsActive =
+			false;
+
+		member.UpdatedAt =
+			_clock.UtcNow;
+
+
+		await _unitOfWork.SaveChangesAsync(
+			cancellationToken);
+
+
+		return MapToResponse(
+			member);
 	}
 
 	private static void ValidateCreateRequest(

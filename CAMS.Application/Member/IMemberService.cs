@@ -28,4 +28,12 @@ public interface IMemberService
 	Task<bool> DeleteAsync(
 		Guid id,
 		CancellationToken cancellationToken = default);
+
+	Task<MemberResponse> ActivateAsync(
+		Guid id,
+		CancellationToken cancellationToken = default);
+
+	Task<MemberResponse> DeactivateAsync(
+		Guid id,
+		CancellationToken cancellationToken = default);
 }

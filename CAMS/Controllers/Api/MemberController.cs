@@ -133,4 +133,41 @@ public class MemberController : ControllerBase
                 null,
 				"Member deleted successfully."));
     }
+
+	[HttpPost("{id:guid}/activate")]
+	[EnableRateLimiting(
+	RateLimitLevel.Moderate)]
+	public async Task<IActionResult> Activate(
+	Guid id,
+	CancellationToken cancellationToken)
+	{
+		var member =
+			await _memberService.ActivateAsync(
+				id,
+				cancellationToken);
+
+		return Ok(
+			ApiResponse<MemberResponse>.Ok(
+				member,
+				"Member activated successfully."));
+	}
+
+
+	[HttpPost("{id:guid}/deactivate")]
+	[EnableRateLimiting(
+		RateLimitLevel.Moderate)]
+	public async Task<IActionResult> Deactivate(
+		Guid id,
+		CancellationToken cancellationToken)
+	{
+		var member =
+			await _memberService.DeactivateAsync(
+				id,
+				cancellationToken);
+
+		return Ok(
+			ApiResponse<MemberResponse>.Ok(
+				member,
+				"Member deactivated successfully."));
+	}
 }

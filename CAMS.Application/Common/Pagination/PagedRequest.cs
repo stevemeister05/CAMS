@@ -12,7 +12,12 @@ public class PagedRequest<TFilter>
 
 	public TFilter? Filter { get; set; }
 
-	public string? SortBy { get; set; }
+	public Sort[]? SortBy { get; set; }
+}
 
-	public bool SortDescending { get; set; }
+public class Sort
+{
+	public string Name { get; set; }
+
+	public bool SortDescending { get; set; } = false;
 }

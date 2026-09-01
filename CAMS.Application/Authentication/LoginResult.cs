@@ -11,43 +11,63 @@ public sealed class LoginResult
 
 	public bool MustChangePassword { get; }
 
+	public IReadOnlyList<string> Roles { get; }
+
 	private LoginResult(
 		LoginResultStatus status,
 		string? message = null,
-		bool mustChangePassword = false)
+		bool mustChangePassword = false,
+		IReadOnlyList<string>? roles = null)
 	{
-		Status = status;
-		Message = message;
-		MustChangePassword = mustChangePassword;
+		Status =
+			status;
+
+		Message =
+			message;
+
+		MustChangePassword =
+			mustChangePassword;
+
+		Roles =
+			roles ??
+			Array.Empty<string>();
 	}
 
 	public static LoginResult Success(
-		bool mustChangePassword = false)
+		bool mustChangePassword = false,
+		IReadOnlyList<string>? roles = null)
 		=> new(
 			LoginResultStatus.Success,
-			mustChangePassword: mustChangePassword);
+			mustChangePassword:
+				mustChangePassword,
+			roles:
+				roles);
 
 	public static LoginResult InvalidCredentials(
 		string? message = null)
 		=> new(
 			LoginResultStatus.InvalidCredentials,
-			message ?? "Invalid username or password.");
+			message ??
+				"Invalid username or password.");
 
 	public static LoginResult LockedOut(
 		string? message = null)
 		=> new(
 			LoginResultStatus.LockedOut,
-			message ?? "The account is temporarily locked.");
+			message ??
+				"The account is temporarily locked.");
 
 	public static LoginResult NotAllowed(
 		string? message = null)
 		=> new(
 			LoginResultStatus.NotAllowed,
-			message ?? "This account is not allowed to sign in.");
+			message ??
+				"This account is not allowed to sign in.");
 
 	public static LoginResult RequiresTwoFactor(
 		string? message = null)
 		=> new(
 			LoginResultStatus.RequiresTwoFactor,
-			message ?? "Two-factor authentication is required.");
+			message ??
+				"Two-factor authentication is required.");
 }

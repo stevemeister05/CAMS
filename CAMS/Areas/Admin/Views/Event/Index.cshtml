@@ -1,0 +1,731 @@
+﻿@using CAMS.Domain.Constants
+@using CAMS.Domain.Enums
+
+@{
+	ViewBag.Title =
+		"Events";
+
+	ViewBag.PageTitle =
+		"Events";
+
+	ViewBag.pTitle =
+		"EVENTS";
+
+	Layout =
+		"/Views/Shared/_Layout.cshtml";
+
+
+	var canManageEvents =
+		User.IsInRole(
+			ApplicationRoles.Administrator);
+}
+
+
+<<div id="event-management-page"
+
+	 data-event-type-sunday-mass="@((int)EventType.SundayMass)"
+	 data-event-type-misa-de-gallo="@((int)EventType.MisaDeGallo)"
+	 data-event-type-special-event="@((int)EventType.SpecialEvent)"
+
+	 data-event-status-scheduled="@((int)EventStatus.Scheduled)"
+	 data-event-status-ongoing="@((int)EventStatus.Ongoing)"
+	 data-event-status-completed="@((int)EventStatus.Completed)"
+
+	 data-can-manage-events="@canManageEvents.ToString().ToLowerInvariant()">
+
+
+	<!-- =========================================================
+		 FILTERS
+	========================================================= -->
+
+	<div class="card">
+
+		<div class="card-body">
+
+			<div class="row g-3 align-items-end">
+
+
+				<!-- Search -->
+				<div class="col-xl-4 col-md-6">
+
+					<label for="event-search"
+						   class="form-label">
+
+						Search
+
+					</label>
+
+					<div class="position-relative">
+
+						<input type="search"
+							   id="event-search"
+							   class="form-control"
+							   placeholder="Search event name..."
+							   autocomplete="off">
+
+						<i class="ri-search-line position-absolute
+								  top-50 end-0 translate-middle-y
+								  me-3 text-muted"></i>
+
+					</div>
+
+				</div>
+
+
+				<!-- Type -->
+				<div class="col-xl-2 col-md-3">
+
+					<label for="event-type-filter"
+						   class="form-label">
+
+						Type
+
+					</label>
+
+					<select id="event-type-filter"
+							class="form-select">
+
+						<option value="">
+							All Types
+						</option>
+
+						@foreach (
+							var item in
+								Html.GetEnumSelectList<EventType>())
+						{
+							<option value="@item.Value">
+								@item.Text
+							</option>
+						}
+
+					</select>
+
+				</div>
+
+
+				<!-- Status -->
+				<div class="col-xl-2 col-md-3">
+
+					<label for="event-status-filter"
+						   class="form-label">
+
+						Status
+
+					</label>
+
+					<select id="event-status-filter"
+							class="form-select">
+
+						<option value="">
+							All Statuses
+						</option>
+
+						@foreach (
+							var item in
+								Html.GetEnumSelectList<EventStatus>())
+						{
+							<option value="@item.Value">
+								@item.Text
+							</option>
+						}
+
+					</select>
+
+				</div>
+
+
+				<!-- Date From -->
+				<div class="col-xl-2 col-md-3">
+
+					<label for="event-date-from"
+						   class="form-label">
+
+						Date From
+
+					</label>
+
+					<input type="date"
+						   id="event-date-from"
+						   class="form-control">
+
+				</div>
+
+
+				<!-- Date To -->
+				<div class="col-xl-2 col-md-3">
+
+					<label for="event-date-to"
+						   class="form-label">
+
+						Date To
+
+					</label>
+
+					<input type="date"
+						   id="event-date-to"
+						   class="form-control">
+
+				</div>
+
+			</div>
+
+		</div>
+
+	</div>
+
+
+	<!-- =========================================================
+		 EVENT LIST
+	========================================================= -->
+
+	<div class="card">
+
+		<div class="card-header">
+
+			<div class="d-flex flex-wrap
+						align-items-center
+						justify-content-between gap-2">
+
+				<div>
+					
+					<h5 class="card-title mb-1">
+						Event List
+					</h5>
+
+					<p id="event-result-summary"
+					   class="text-muted mb-0">
+
+						Loading events...
+
+					</p>
+					
+				</div>
+
+
+				<div class="d-flex gap-2">
+
+					<button type="button"
+							id="event-refresh-button"
+							class="btn btn-soft-secondary">
+
+						<i class="ri-refresh-line me-1"></i>
+
+						Refresh
+
+					</button>
+
+					@if (canManageEvents)
+					{
+						<div class="pb-2">
+							<button type="button"
+								id="create-event-button"
+								class="btn btn-primary">
+
+							<i class="ri-add-line me-1"></i>
+
+							Create Special Event
+
+						</button>
+						</div>
+					}
+					
+
+				</div>
+
+			</div>
+
+		</div>
+
+
+		<div class="card-body p-0">
+
+			<div class="table-responsive">
+
+				<table class="table table-hover
+							  table-nowrap align-middle mb-0">
+
+					<thead class="table-light">
+
+						<tr>
+
+							<th>
+								Event
+							</th>
+
+							<th>
+								Type
+							</th>
+
+							<th>
+								Date
+							</th>
+
+							<th>
+								Time
+							</th>
+
+							<th>
+								Status
+							</th>
+
+							<th class="text-end">
+								Actions
+							</th>
+
+						</tr>
+
+					</thead>
+
+
+					<tbody id="event-table-body">
+
+						<tr>
+
+							<td colspan="6"
+								class="text-center py-5 text-muted">
+
+								<div class="spinner-border
+											spinner-border-sm me-2">
+								</div>
+
+								Loading events...
+
+							</td>
+
+						</tr>
+
+					</tbody>
+
+				</table>
+
+			</div>
+
+		</div>
+
+
+		<div class="card-footer">
+
+			<div class="d-flex flex-column
+						flex-md-row align-items-center
+						justify-content-between gap-3">
+
+				<div id="event-pagination-info"
+					 class="text-muted">
+				</div>
+
+
+				<div class="d-flex align-items-center gap-3">
+
+					<select id="event-page-size"
+							class="form-select form-select-sm"
+							style="width: auto;">
+
+						<option value="10">
+							10
+						</option>
+
+						<option value="20"
+								selected>
+							20
+						</option>
+
+						<option value="50">
+							50
+						</option>
+
+					</select>
+
+
+					<nav aria-label="Event pagination">
+
+						<ul id="event-pagination"
+							class="pagination pagination-sm mb-0">
+						</ul>
+
+					</nav>
+
+				</div>
+
+			</div>
+
+		</div>
+
+	</div>
+
+</div>
+
+
+<!-- =============================================================
+	 CREATE / EDIT EVENT MODAL
+============================================================= -->
+
+<div class="modal fade"
+	 id="event-modal"
+	 tabindex="-1"
+	 aria-labelledby="event-modal-title"
+	 aria-hidden="true">
+
+	<div class="modal-dialog modal-dialog-centered modal-lg">
+
+		<div class="modal-content">
+
+			<div class="modal-header">
+
+				<h5 class="modal-title"
+					id="event-modal-title">
+
+					Event
+
+				</h5>
+
+				<button type="button"
+						class="btn-close"
+						data-bs-dismiss="modal"
+						aria-label="Close">
+				</button>
+
+			</div>
+
+
+			<form id="event-form"
+				  novalidate>
+
+				<div class="modal-body">
+
+					<div id="event-form-error"
+						 class="alert alert-danger d-none">
+					</div>
+
+
+					<!-- =================================================
+						 EVENT DETAILS
+					================================================= -->
+
+					<h6 class="text-uppercase text-muted fs-xs mb-3">
+						Event Details
+					</h6>
+
+
+					<div class="row g-3">
+
+						<div class="col-md-8">
+
+							<label for="event-name"
+								   class="form-label">
+
+								Event Name
+								<span class="text-danger">*</span>
+
+							</label>
+
+							<input type="text"
+								   id="event-name"
+								   class="form-control"
+								   maxlength="200"
+								   required>
+
+							<div class="invalid-feedback">
+								Please enter the event name.
+							</div>
+
+						</div>
+
+
+						<div class="col-md-4">
+
+							<label for="event-type"
+								   class="form-label">
+
+								Event Type
+
+							</label>
+
+							<select id="event-type"
+									class="form-select"
+									disabled>
+
+								@foreach (
+									var item in
+										Html.GetEnumSelectList<EventType>())
+								{
+									<option value="@item.Value">
+										@item.Text
+									</option>
+								}
+
+							</select>
+
+						</div>
+
+
+						<div class="col-md-6">
+
+							<label for="event-date"
+								   class="form-label">
+
+								Event Date
+								<span class="text-danger">*</span>
+
+							</label>
+
+							<input type="date"
+								   id="event-date"
+								   class="form-control"
+								   required>
+
+						</div>
+
+
+						<div class="col-md-6">
+
+							<label for="event-status"
+								   class="form-label">
+
+								Status
+								<span class="text-danger">*</span>
+
+							</label>
+
+							<select id="event-status"
+									class="form-select"
+									required>
+
+								@foreach (
+									var item in
+										Html.GetEnumSelectList<EventStatus>())
+								{
+									<option value="@item.Value">
+										@item.Text
+									</option>
+								}
+
+							</select>
+
+						</div>
+
+
+						<div class="col-12">
+
+							<label for="event-description"
+								   class="form-label">
+
+								Description
+
+							</label>
+
+							<textarea id="event-description"
+									  class="form-control"
+									  rows="3"
+									  placeholder="Optional event description..."></textarea>
+
+						</div>
+
+					</div>
+
+
+					<hr class="my-4">
+
+
+					<!-- =================================================
+						 EVENT SCHEDULE
+					================================================= -->
+
+					<h6 class="text-uppercase text-muted fs-xs mb-3">
+						Event Schedule
+					</h6>
+
+
+					<div class="row g-3">
+
+						<div class="col-md-6">
+
+							<label for="event-start-time"
+								   class="form-label">
+
+								Start Time
+								<span class="text-danger">*</span>
+
+							</label>
+
+							<input type="time"
+								   id="event-start-time"
+								   class="form-control"
+								   required>
+
+						</div>
+
+
+						<div class="col-md-6">
+
+							<label for="event-end-time"
+								   class="form-label">
+
+								End Time
+								<span class="text-danger">*</span>
+
+							</label>
+
+							<input type="time"
+								   id="event-end-time"
+								   class="form-control"
+								   required>
+
+						</div>
+
+					</div>
+
+
+					<hr class="my-4">
+
+
+					<!-- =================================================
+						 ATTENDANCE WINDOWS
+					================================================= -->
+
+					<h6 class="text-uppercase text-muted fs-xs mb-1">
+						Attendance Windows
+					</h6>
+
+					<p class="text-muted fs-sm mb-3">
+						Set when members are allowed to time in
+						and time out for this event.
+					</p>
+
+
+					<div class="row g-3">
+
+
+						<!-- Time In -->
+
+						<div class="col-12">
+
+							<div class="fw-medium">
+								Time In
+							</div>
+
+						</div>
+
+
+						<div class="col-md-6">
+
+							<label for="attendance-time-in-start"
+								   class="form-label">
+
+								Starts At
+								<span class="text-danger">*</span>
+
+							</label>
+
+							<input type="time"
+								   id="attendance-time-in-start"
+								   class="form-control"
+								   required>
+
+						</div>
+
+
+						<div class="col-md-6">
+
+							<label for="attendance-time-in-end"
+								   class="form-label">
+
+								Ends At
+								<span class="text-danger">*</span>
+
+							</label>
+
+							<input type="time"
+								   id="attendance-time-in-end"
+								   class="form-control"
+								   required>
+
+						</div>
+
+
+						<!-- Time Out -->
+
+						<div class="col-12 mt-4">
+
+							<div class="fw-medium">
+								Time Out
+							</div>
+
+						</div>
+
+
+						<div class="col-md-6">
+
+							<label for="attendance-time-out-start"
+								   class="form-label">
+
+								Starts At
+								<span class="text-danger">*</span>
+
+							</label>
+
+							<input type="time"
+								   id="attendance-time-out-start"
+								   class="form-control"
+								   required>
+
+						</div>
+
+
+						<div class="col-md-6">
+
+							<label for="attendance-time-out-end"
+								   class="form-label">
+
+								Ends At
+								<span class="text-danger">*</span>
+
+							</label>
+
+							<input type="time"
+								   id="attendance-time-out-end"
+								   class="form-control"
+								   required>
+
+						</div>
+
+					</div>
+
+				</div>
+
+
+				<div class="modal-footer">
+
+					<button type="button"
+							class="btn btn-light"
+							data-bs-dismiss="modal">
+
+						Cancel
+
+					</button>
+
+
+					<button type="submit"
+							id="event-save-button"
+							class="btn btn-primary">
+
+						Save Event
+
+					</button>
+
+				</div>
+
+			</form>
+
+		</div>
+
+	</div>
+
+</div>
+
+
+@section Scripts {
+
+	<script src="~/js/pages/admin/events.js"
+			asp-append-version="true"></script>
+
+}

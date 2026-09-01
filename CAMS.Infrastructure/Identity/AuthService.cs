@@ -42,8 +42,13 @@ public sealed class AuthService : IAuthService
 
 		if (result.Succeeded)
 		{
+			var roles = await _userManager.GetRolesAsync(
+			user);
+
 			return LoginResult.Success(
-				user.MustChangePassword);
+				mustChangePassword:
+					user.MustChangePassword,
+				roles: roles.AsReadOnly());
 		}
 
 		if (result.IsLockedOut)

@@ -48,9 +48,12 @@ public sealed class PasswordChangeCompletedHandler
 			return;
 		}
 
-		if (!user.MustChangePassword)
-		{
-			context.Succeed(requirement);
-		}
+		// Force change password
+		//if (!user.MustChangePassword)
+		//{
+		//	context.Succeed(requirement);
+		//}
+
+		context.Succeed(requirement);
 	}
 }

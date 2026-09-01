@@ -50,7 +50,6 @@ public class EventRepository : Repository<Event>, IEventRepository
 		}
 
 		var query = DbSet
-			.AsNoTracking()
 			.AsQueryable();
 
 		if (startDate.HasValue)

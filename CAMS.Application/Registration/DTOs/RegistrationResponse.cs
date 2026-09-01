@@ -11,6 +11,12 @@ public class RegistrationResponse
 
 	public string MobileNumber { get; set; } = string.Empty;
 
+	public string FirstName { get; set; } = string.Empty;
+
+	public string LastName { get; set; } = string.Empty;
+
+	public string? MiddleName { get; set; }
+
 	public RegistrationStatus Status { get; set; }
 
 	public DateTime RegisteredAt { get; set; }
