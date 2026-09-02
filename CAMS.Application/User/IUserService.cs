@@ -25,4 +25,29 @@ public interface IUserService
 		string currentPassword,
 		string newPassword,
 		CancellationToken cancellationToken = default);
+
+	Task<IReadOnlyList<UserResponse>> GetAllAsync(
+	CancellationToken cancellationToken = default);
+
+	Task<UserResponse> GetByIdAsync(
+		Guid id,
+		CancellationToken cancellationToken = default);
+
+	Task<UserResponse> UpdateStaffUserAsync(
+		Guid id,
+		UpdateStaffUserRequest request,
+		CancellationToken cancellationToken = default);
+
+	Task ResetPasswordAsync(
+		Guid id,
+		CancellationToken cancellationToken = default);
+
+	Task SetActiveStatusAsync(
+		Guid id,
+		bool isActive,
+		CancellationToken cancellationToken = default);
+
+	Task<bool> IsUserActiveAsync(
+		Guid userId,
+		CancellationToken cancellationToken = default);
 }

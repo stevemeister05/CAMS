@@ -20,4 +20,4 @@ Update-Database 0 -Context CAMSDbContext -Project CAMS.Infrastructure -StartupPr
 
 
 
-Add-Migration MakeTimeInNonNullableInAttendance -Context CAMSDbContext -Project CAMS.Infrastructure -StartupProject CAMS.Web
+Add-Migration ActivateExistingUsers -Context CAMSDbContext -Project CAMS.Infrastructure -StartupProject CAMS.Web

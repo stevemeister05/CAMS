@@ -146,6 +146,9 @@ app.UseRouting();
 app.UseRateLimiter();
 
 app.UseAuthentication();
+
+app.UseMiddleware<ActiveUserMiddleware>();
+
 app.UseAuthorization();
 
 app.MapStaticAssets();

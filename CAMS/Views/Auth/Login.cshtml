@@ -238,20 +238,14 @@
                                 body: JSON.stringify(request)
                             });
 
+                        // Login successful
+                        const result = await response.json();
 
                         // Handle unsuccessful login
                         if (!response.ok) {
 
-                            let message = "Unable to sign in.";
-
                             try {
-
-                                const error =
-                                    await camsApi.readProblem(response);
-                                message =
-                                    error?.detail ??
-                                    error?.message ??
-                                    message;
+                                message = await camsApi.getErrorMessage(result) ?? "Unable to sign in.";
                             }
                             catch {
                                 // Ignore invalid error response.
@@ -259,10 +253,6 @@
 
                             throw new Error(message);
                         }
-
-
-                        // Login successful
-                        const result = await response.json();
 
 
                         /*

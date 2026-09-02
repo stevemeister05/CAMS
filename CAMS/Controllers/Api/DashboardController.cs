@@ -15,9 +15,7 @@ namespace CAMS.Web.Controllers.Api;
 [Authorize(
 	Policy =
 		AuthorizationPolicies.PasswordChangeCompleted)]
-[Authorize(
-	Roles =
-		ApplicationRoles.Administrator)]
+[Authorize(Roles = ApplicationRoles.AdministratorOrAttendanceStaff)]
 [ApiController]
 public class DashboardController : ControllerBase
 {

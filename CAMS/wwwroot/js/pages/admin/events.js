@@ -504,6 +504,10 @@
 			"sortBy[1].sortDescending",
 			"false");
 
+		params.set(
+			"sortBy[2].name",
+			"StartTime");
+
 		return (
 			"/api/v1/events?" +
 			params.toString()

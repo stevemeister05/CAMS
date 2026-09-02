@@ -1,5 +1,6 @@
 ﻿using CAMS.Application.User;
 using CAMS.Application.User.DTOs;
+using CAMS.Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +25,7 @@ public class UserController : ControllerBase
 	/// Creates an administrator account.
 	/// </summary>
 	[HttpPost("administrators")]
-	[Authorize(Roles = "Administrator")]
+	[Authorize(Roles = ApplicationRoles.Administrator)]
 	public async Task<ActionResult<UserResponse>> CreateAdministrator(
 		[FromBody] CreateStaffUserRequest request,
 		CancellationToken cancellationToken)
@@ -41,7 +42,7 @@ public class UserController : ControllerBase
 	/// Creates an attendance staff account.
 	/// </summary>
 	[HttpPost("attendance-staff")]
-	[Authorize(Roles = "Administrator")]
+	[Authorize(Roles = ApplicationRoles.Administrator)]
 	public async Task<ActionResult<UserResponse>> CreateAttendanceStaff(
 		[FromBody] CreateStaffUserRequest request,
 		CancellationToken cancellationToken)
@@ -79,6 +80,87 @@ public class UserController : ControllerBase
 			request.CurrentPassword,
 			request.NewPassword,
 			cancellationToken);
+
+		return NoContent();
+	}
+
+	[HttpGet]
+	[Authorize(Roles = ApplicationRoles.Administrator)]
+	public async Task<ActionResult<
+		IReadOnlyList<UserResponse>>> GetAll(CancellationToken cancellationToken)
+	{
+		var result =
+			await _userService.GetAllAsync(
+				cancellationToken);
+
+
+		return Ok(
+			result);
+	}
+
+	[HttpGet("{id:guid}")]
+	[Authorize(Roles = ApplicationRoles.Administrator)]
+	public async Task<ActionResult<UserResponse>> GetById(
+		Guid id,
+		CancellationToken cancellationToken)
+	{
+		var result =
+			await _userService.GetByIdAsync(
+				id,
+				cancellationToken);
+
+
+		return Ok(
+			result);
+	}
+
+	[HttpPut("{id:guid}")]
+	[Authorize(Roles = ApplicationRoles.Administrator)]
+	public async Task<ActionResult<UserResponse>> Update(
+		Guid id,
+		[FromBody] UpdateStaffUserRequest request,
+		CancellationToken cancellationToken)
+	{
+		var result =
+			await _userService.UpdateStaffUserAsync(
+				id,
+				request,
+				cancellationToken);
+
+
+		return Ok(
+			result);
+	}
+
+	[HttpPost("{id:guid}/reset-password")]
+	[Authorize(Roles = ApplicationRoles.Administrator)]
+	public async Task<IActionResult> ResetPassword(
+		Guid id,
+		CancellationToken cancellationToken)
+	{
+		await _userService.ResetPasswordAsync(
+			id,
+			cancellationToken);
+
+
+		return NoContent();
+	}
+
+	[HttpPut("{id:guid}/status")]
+	[Authorize(
+	Roles =
+		ApplicationRoles.Administrator)]
+	public async Task<IActionResult> UpdateStatus(
+		Guid id,
+		[FromBody]
+		UpdateUserStatusRequest request,
+		CancellationToken cancellationToken)
+	{
+		await _userService.SetActiveStatusAsync(
+			id,
+			request.IsActive,
+			cancellationToken);
+
 
 		return NoContent();
 	}

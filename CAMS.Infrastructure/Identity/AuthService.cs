@@ -1,4 +1,5 @@
-﻿using CAMS.Infrastructure.Identity;
+﻿using CAMS.Application.Common.Exceptions;
+using CAMS.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 
 namespace CAMS.Application.Authentication;
@@ -31,7 +32,7 @@ public sealed class AuthService : IAuthService
 
 		if (user is null)
 		{
-			return LoginResult.InvalidCredentials();
+			return LoginResult.Deactivated();
 		}
 
 		var result = await _signInManager.PasswordSignInAsync(
@@ -39,6 +40,13 @@ public sealed class AuthService : IAuthService
 			request.Password,
 			request.RememberMe,
 			lockoutOnFailure: true);
+
+		if (!user.IsActive)
+		{
+			throw new UnauthorizedException(
+				"This user account has been disabled.",
+				"USER_DISABLED");
+		}
 
 		if (result.Succeeded)
 		{

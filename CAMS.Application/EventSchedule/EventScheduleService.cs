@@ -1,4 +1,5 @@
 ﻿using CAMS.Application.Common;
+using CAMS.Application.Common.Clocking;
 using CAMS.Application.Common.Exceptions;
 using CAMS.Application.Common.Pagination;
 using CAMS.Application.EventSchedule.DTOs;
@@ -10,13 +11,16 @@ public class EventScheduleService : IEventScheduleService
 {
 	private readonly IEventScheduleRepository _eventScheduleRepository;
 	private readonly IUnitOfWork _unitOfWork;
+	private readonly IApplicationClock _clock;
 
 	public EventScheduleService(
 		IEventScheduleRepository eventScheduleRepository,
-		IUnitOfWork unitOfWork)
+		IUnitOfWork unitOfWork,
+		IApplicationClock clock)
 	{
 		_eventScheduleRepository = eventScheduleRepository;
 		_unitOfWork = unitOfWork;
+		_clock = clock;
 	}
 
 	public async Task<EventScheduleResponse> GetByIdAsync(
@@ -118,7 +122,7 @@ public class EventScheduleService : IEventScheduleService
 			EndMonth = request.EndMonth,
 			EndDay = request.EndDay,
 
-			CreatedAt = DateTime.UtcNow
+			CreatedAt = _clock.UtcNow
 		};
 
 		await _eventScheduleRepository.AddAsync(
@@ -205,7 +209,7 @@ public class EventScheduleService : IEventScheduleService
 		schedule.EndMonth = request.EndMonth;
 		schedule.EndDay = request.EndDay;
 
-		schedule.UpdatedAt = DateTime.UtcNow;
+		schedule.UpdatedAt = _clock.UtcNow;
 
 		_eventScheduleRepository.Update(schedule);
 

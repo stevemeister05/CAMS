@@ -5,15 +5,17 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CAMS.Web.Areas.Admin.Controllers;
 
-[Authorize]
 [Area("Admin")]
-[Route("admin/members")]
-[Route("admin/member")]
-[Authorize(Roles = ApplicationRoles.Administrator)]
-[Authorize(Policy = AuthorizationPolicies.PasswordChangeCompleted)]
-public class MemberController : Controller
+[Route("admin/event-schedules")]
+[Authorize(
+	Roles =
+		ApplicationRoles.Administrator)]
+[Authorize(
+	Policy =
+		AuthorizationPolicies.PasswordChangeCompleted)]
+public class EventScheduleController : Controller
 {
-	[HttpGet]
+	[HttpGet("")]
 	public IActionResult Index()
 	{
 		return View();

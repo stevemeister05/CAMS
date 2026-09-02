@@ -5,15 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CAMS.Web.Areas.Admin.Controllers;
 
-[Authorize]
 [Area("Admin")]
-[Route("admin/members")]
-[Route("admin/member")]
-[Authorize(Roles = ApplicationRoles.Administrator)]
-[Authorize(Policy = AuthorizationPolicies.PasswordChangeCompleted)]
-public class MemberController : Controller
+[Route("admin/users")]
+[Authorize(Roles = ApplicationRoles.Administrator, Policy = AuthorizationPolicies.PasswordChangeCompleted)]
+public class UserController : Controller
 {
-	[HttpGet]
+	[HttpGet("")]
 	public IActionResult Index()
 	{
 		return View();

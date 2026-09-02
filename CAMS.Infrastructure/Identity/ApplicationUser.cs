@@ -12,5 +12,7 @@ public class ApplicationUser : IdentityUser<Guid>
 
 	public bool MustChangePassword { get; set; } = false;
 
+	public bool IsActive { get; set; } = true;
+
 	public Member? Member { get; set; }
 }

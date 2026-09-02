@@ -173,6 +173,226 @@ public class UserService : IUserService
 		}
 	}
 
+	public async Task<IReadOnlyList<UserResponse>> GetAllAsync(
+		CancellationToken cancellationToken = default)
+	{
+		var users =
+			await _userManager.Users
+				.Include(x =>
+					x.Member)
+				.OrderBy(x =>
+					x.UserName)
+				.ToListAsync(
+					cancellationToken);
+
+
+		var result =
+			new List<UserResponse>(
+				users.Count);
+
+
+		foreach (var user in users)
+		{
+			result.Add(
+				await MapToResponseAsync(
+					user));
+		}
+
+
+		return result;
+	}
+
+	public async Task<UserResponse> GetByIdAsync(
+		Guid id,
+		CancellationToken cancellationToken = default)
+	{
+		if (id == Guid.Empty)
+		{
+			throw new ValidationException(
+				"User ID is required.");
+		}
+
+
+		var user =
+			await _userManager.Users
+				.Include(x =>
+					x.Member)
+				.FirstOrDefaultAsync(
+					x =>
+						x.Id == id,
+					cancellationToken);
+
+
+		if (user is null)
+		{
+			throw new NotFoundException(
+				"User was not found.");
+		}
+
+
+		return await MapToResponseAsync(
+			user);
+	}
+
+	public async Task<UserResponse> UpdateStaffUserAsync(
+	Guid id,
+	UpdateStaffUserRequest request,
+	CancellationToken cancellationToken = default)
+	{
+		if (id == Guid.Empty)
+		{
+			throw new ValidationException(
+				"User ID is required.");
+		}
+
+
+		if (request is null)
+		{
+			throw new ValidationException(
+				"User information is required.");
+		}
+
+
+		if (string.IsNullOrWhiteSpace(
+			request.UserName))
+		{
+			throw new ValidationException(
+				"Username is required.");
+		}
+
+
+		var user =
+			await _userManager.Users
+				.Include(x =>
+					x.Member)
+				.FirstOrDefaultAsync(
+					x =>
+						x.Id == id,
+					cancellationToken);
+
+
+		if (user is null)
+		{
+			throw new NotFoundException(
+				"User was not found.");
+		}
+
+
+		if (user.MemberId.HasValue)
+		{
+			throw new ConflictException(
+				"Member user accounts cannot be edited.");
+		}
+
+
+		var userName =
+			request.UserName.Trim();
+
+
+		var existingUser =
+			await _userManager.FindByNameAsync(
+				userName);
+
+
+		if (
+			existingUser is not null &&
+			existingUser.Id != id
+		)
+		{
+			throw new ConflictException(
+				"A user account with this username already exists.");
+		}
+
+
+		user.UserName =
+			userName;
+
+
+		var result =
+			await _userManager.UpdateAsync(
+				user);
+
+
+		if (!result.Succeeded)
+		{
+			throw CreateIdentityException(
+				result,
+				"Failed to update the user account.");
+		}
+
+
+		return await MapToResponseAsync(
+			user);
+	}
+
+	public async Task ResetPasswordAsync(
+	Guid id,
+	CancellationToken cancellationToken = default)
+	{
+		if (id == Guid.Empty)
+		{
+			throw new ValidationException(
+				"User ID is required.");
+		}
+
+
+		var user =
+			await _userManager.FindByIdAsync(
+				id.ToString());
+
+
+		if (user is null)
+		{
+			throw new NotFoundException(
+				"User was not found.");
+		}
+
+
+		if (string.IsNullOrWhiteSpace(
+			user.UserName))
+		{
+			throw new ValidationException(
+				"The user does not have a valid username.");
+		}
+
+
+		var temporaryPassword =
+			user.UserName.Trim();
+
+
+		user.PasswordHash =
+			_userManager.PasswordHasher
+				.HashPassword(
+					user,
+					temporaryPassword);
+
+
+		user.MustChangePassword =
+			true;
+
+
+		/*
+		 * Invalidate existing authentication sessions
+		 * after an administrator resets the password.
+		 */
+		user.SecurityStamp =
+			Guid.NewGuid()
+				.ToString();
+
+
+		var result =
+			await _userManager.UpdateAsync(
+				user);
+
+
+		if (!result.Succeeded)
+		{
+			throw CreateIdentityException(
+				result,
+				"Failed to reset the user's password.");
+		}
+	}
+
 	private async Task<UserResponse> CreateUserAsync(
 		string userName,
 		string passwordHash,
@@ -217,7 +437,9 @@ public class UserService : IUserService
 			MustChangePassword =
 				mustChangePassword,
 
-			PasswordHash = passwordHash
+			PasswordHash = passwordHash,
+
+			IsActive = true
 		};
 
 		var createResult =
@@ -251,7 +473,86 @@ public class UserService : IUserService
 				"to the user account.");
 		}
 
-		return MapToResponse(user);
+		return await MapToResponseAsync(user);
+	}
+
+	public async Task SetActiveStatusAsync(
+	Guid id,
+	bool isActive,
+	CancellationToken cancellationToken = default)
+	{
+		if (id == Guid.Empty)
+		{
+			throw new ValidationException(
+				"User ID is required.");
+		}
+
+
+		var user =
+			await _userManager.FindByIdAsync(
+				id.ToString());
+
+
+		if (user is null)
+		{
+			throw new NotFoundException(
+				"User was not found.");
+		}
+
+
+		if (
+			user.IsActive ==
+			isActive
+		)
+		{
+			return;
+		}
+
+
+		user.IsActive =
+			isActive;
+
+
+		/*
+		 * Changing the security stamp invalidates
+		 * the user's existing authentication session.
+		 */
+		user.SecurityStamp =
+			Guid.NewGuid()
+				.ToString();
+
+
+		var result =
+			await _userManager.UpdateAsync(
+				user);
+
+
+		if (!result.Succeeded)
+		{
+			throw CreateIdentityException(
+				result,
+				isActive
+					? "Failed to enable the user account."
+					: "Failed to disable the user account.");
+		}
+	}
+
+	public async Task<bool> IsUserActiveAsync(
+		Guid userId,
+		CancellationToken cancellationToken = default)
+	{
+		if (userId == Guid.Empty)
+		{
+			return false;
+		}
+
+
+		return await _userManager.Users
+			.AnyAsync(
+				x =>
+					x.Id == userId &&
+					x.IsActive,
+				cancellationToken);
 	}
 
 	private static void ValidateStaffRequest(
@@ -283,20 +584,68 @@ public class UserService : IUserService
 		}
 	}
 
-	private static UserResponse MapToResponse(
+	private async Task<UserResponse> MapToResponseAsync(
 		ApplicationUser user)
 	{
+		var roles =
+			await _userManager.GetRolesAsync(
+				user);
+
+
 		return new UserResponse
 		{
-			Id = user.Id,
+			Id =
+				user.Id,
 
-			MemberId = user.MemberId,
+			MemberId =
+				user.MemberId,
 
 			UserName =
-				user.UserName ?? string.Empty,
+				user.UserName ??
+				string.Empty,
 
-			Email = user.Email
+			Email =
+				user.Email,
+
+			Role =
+				roles.FirstOrDefault() ??
+				string.Empty,
+
+			MemberName =
+				BuildMemberName(
+					user.Member),
+
+			IsActive =
+				user.IsActive,
+
+			MustChangePassword =
+				user.MustChangePassword
 		};
+	}
+
+	private static string? BuildMemberName(
+		Domain.Entities.Member? member)
+	{
+		if (member is null)
+		{
+			return null;
+		}
+
+
+		var parts =
+			new[]
+			{
+			member.FirstName,
+			member.MiddleName,
+			member.LastName
+			}
+			.Where(x =>
+				!string.IsNullOrWhiteSpace(x));
+
+
+		return string.Join(
+			" ",
+			parts);
 	}
 
 	private static ValidationException CreateIdentityException(

@@ -1,0 +1,769 @@
+﻿@using CAMS.Domain.Enums
+
+@{
+	ViewData["Title"] = "Event Schedules";
+
+	Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<div id="event-schedules-page"
+	 data-event-type-sunday-mass="@((int)EventType.SundayMass)"
+	 data-event-type-misa-de-gallo="@((int)EventType.MisaDeGallo)"
+	 data-sunday="@((int)DayOfWeek.Sunday)">
+
+	<div class="alert alert-info border-0 mb-4"
+		 role="alert">
+
+		<div class="d-flex align-items-start">
+
+			<div class="flex-shrink-0 me-3">
+
+				<i class="ri-information-line fs-3">
+				</i>
+
+			</div>
+
+
+			<div class="flex-grow-1">
+
+				<h6 class="alert-heading mb-1">
+					Automatic Event Generation
+				</h6>
+
+				<p class="mb-2">
+					Event Schedules are only used for automatically generating
+					recurring events such as
+					<strong>Sunday Mass</strong>
+					and
+					<strong>Misa de Gallo</strong>.
+				</p>
+
+				<p class="mb-0">
+
+					For one-time or special events, create the event manually from the
+
+					<a asp-area="Admin"
+					   asp-controller="Event"
+					   asp-action="Index"
+					   class="alert-link fw-semibold">
+
+						Events page
+
+						<i class="ri-external-link-line align-middle ms-1">
+						</i>
+
+					</a>.
+
+				</p>
+
+			</div>
+
+		</div>
+
+	</div>
+
+	<div class="row">
+		<div class="col-12">
+
+			<div class="card">
+
+				<div class="card-header">
+
+					<div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+
+						<div>
+							<h5 class="card-title mb-1">
+								Event Schedules
+							</h5>
+
+							<p class="text-muted mb-0">
+								Configure recurring Sunday Mass and Misa de Gallo schedules.
+							</p>
+						</div>
+
+						<div class="d-flex flex-wrap gap-2">
+
+							<button type="button"
+									id="regenerate-events-button"
+									class="btn btn-soft-warning">
+
+								<i class="ri-refresh-line align-middle me-1"></i>
+
+								Regenerate Events
+
+							</button>
+
+							<button type="button"
+									id="create-schedule-button"
+									class="btn btn-primary">
+
+								<i class="ri-add-line align-middle me-1"></i>
+
+								Add Schedule
+
+							</button>
+
+						</div>
+
+					</div>
+
+				</div>
+
+
+				<div class="card-body border-bottom">
+
+					<div class="row g-3">
+
+						<div class="col-xl-4 col-md-6">
+
+							<label for="schedule-search"
+								   class="form-label">
+								Search
+							</label>
+
+							<div class="position-relative">
+
+								<input type="text"
+									   id="schedule-search"
+									   class="form-control"
+									   placeholder="Search schedule name..." />
+
+								<i class="ri-search-line position-absolute top-50 end-0 translate-middle-y me-3 text-muted">
+								</i>
+
+							</div>
+
+						</div>
+
+
+						<div class="col-xl-3 col-md-6">
+
+							<label for="schedule-type-filter"
+								   class="form-label">
+								Event Type
+							</label>
+
+							<select id="schedule-type-filter"
+									class="form-select">
+
+								<option value="">
+									All Types
+								</option>
+
+								<option value="@((int)EventType.SundayMass)">
+									Sunday Mass
+								</option>
+
+								<option value="@((int)EventType.MisaDeGallo)">
+									Misa de Gallo
+								</option>
+
+							</select>
+
+						</div>
+
+
+						<div class="col-xl-2 col-md-6">
+
+							<label for="schedule-status-filter"
+								   class="form-label">
+								Status
+							</label>
+
+							<select id="schedule-status-filter"
+									class="form-select">
+
+								<option value="">
+									All
+								</option>
+
+								<option value="true">
+									Active
+								</option>
+
+								<option value="false">
+									Inactive
+								</option>
+
+							</select>
+
+						</div>
+
+
+						<div class="col-xl-2 col-md-6">
+
+							<label for="schedule-page-size"
+								   class="form-label">
+								Rows
+							</label>
+
+							<select id="schedule-page-size"
+									class="form-select">
+
+								<option value="10">
+									10
+								</option>
+
+								<option value="20"
+										selected>
+									20
+								</option>
+
+								<option value="50">
+									50
+								</option>
+
+								<option value="100">
+									100
+								</option>
+
+							</select>
+
+						</div>
+
+					</div>
+
+				</div>
+
+				<div class="card-body p-0">
+
+					<div class="table-responsive">
+
+						<table class="table table-hover align-middle mb-0">
+
+							<thead class="table-light">
+
+								<tr>
+
+									<th class="ps-3">
+										Schedule
+									</th>
+
+									<th>
+										Type
+									</th>
+
+									<th>
+										Event Time
+									</th>
+
+									<th>
+										Recurrence
+									</th>
+
+									<th>
+										Attendance
+									</th>
+
+									<th>
+										Status
+									</th>
+
+									<th class="text-end pe-3">
+										Actions
+									</th>
+
+								</tr>
+
+							</thead>
+
+							<tbody id="schedule-table-body">
+
+								<tr>
+									<td colspan="7"
+										class="text-center text-muted py-5">
+
+										Loading event schedules...
+
+									</td>
+								</tr>
+
+							</tbody>
+
+						</table>
+
+					</div>
+
+				</div>
+
+
+				<div class="card-footer">
+
+					<div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+
+						<div id="schedule-summary"
+							 class="text-muted fs-13">
+						</div>
+
+						<div id="schedule-pagination"
+							 class="d-flex align-items-center gap-2">
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+
+
+	<!-- =========================================================
+		 CREATE / EDIT MODAL
+		 ========================================================= -->
+
+	<div class="modal fade"
+		 id="schedule-modal"
+		 tabindex="-1"
+		 aria-hidden="true">
+
+		<div class="modal-dialog modal-lg modal-dialog-scrollable">
+
+			<div class="modal-content">
+
+				<form id="schedule-form"
+					  novalidate>
+
+					<div class="modal-header">
+
+						<h5 class="modal-title"
+							id="schedule-modal-title">
+							Add Event Schedule
+						</h5>
+
+						<button type="button"
+								class="btn-close"
+								data-bs-dismiss="modal"
+								aria-label="Close">
+						</button>
+
+					</div>
+
+
+					<div class="modal-body">
+
+						<input type="hidden"
+							   id="schedule-id" />
+
+
+						<div id="schedule-form-error"
+							 class="alert alert-danger d-none"
+							 role="alert">
+						</div>
+
+
+						<div class="row g-3">
+
+							<div class="col-md-8">
+
+								<label for="schedule-name"
+									   class="form-label">
+									Name
+								</label>
+
+								<input type="text"
+									   id="schedule-name"
+									   class="form-control"
+									   readonly
+									   placeholder="Automatically generated" />
+
+								<div class="form-text">
+									Generated automatically from the event type and start time.
+								</div>
+
+							</div>
+
+
+							<div class="col-md-4">
+
+								<label for="schedule-event-type"
+									   class="form-label">
+
+									Event Type
+									<span class="text-danger">*</span>
+
+								</label>
+
+								<select id="schedule-event-type"
+										class="form-select"
+										required>
+
+									<option value="">
+										Select event type
+									</option>
+
+									<option value="@((int)EventType.SundayMass)">
+										Sunday Mass
+									</option>
+
+									<option value="@((int)EventType.MisaDeGallo)">
+										Misa de Gallo
+									</option>
+
+								</select>
+
+								<div class="invalid-feedback">
+									Event type is required.
+								</div>
+
+							</div>
+
+
+							<div class="col-12">
+
+								<hr class="my-1" />
+
+								<h6 class="mb-0">
+									Event Time
+								</h6>
+
+							</div>
+
+
+							<div class="col-md-6">
+
+								<label for="schedule-start-time"
+									   class="form-label">
+
+									Start Time
+									<span class="text-danger">*</span>
+
+								</label>
+
+								<input type="time"
+									   id="schedule-start-time"
+									   class="form-control"
+									   required />
+
+							</div>
+
+
+							<div class="col-md-6">
+
+								<label for="schedule-end-time"
+									   class="form-label">
+
+									End Time
+									<span class="text-danger">*</span>
+
+								</label>
+
+								<input type="time"
+									   id="schedule-end-time"
+									   class="form-control"
+									   required />
+
+							</div>
+
+
+							<div class="col-12">
+
+								<hr class="my-1" />
+
+								<h6 class="mb-0">
+									Attendance Time-In
+								</h6>
+
+							</div>
+
+
+							<div class="col-md-6">
+
+								<label for="schedule-time-in-start"
+									   class="form-label">
+
+									Time-In Start
+									<span class="text-danger">*</span>
+
+								</label>
+
+								<input type="time"
+									   id="schedule-time-in-start"
+									   class="form-control"
+									   required />
+
+							</div>
+
+
+							<div class="col-md-6">
+
+								<label for="schedule-time-in-end"
+									   class="form-label">
+
+									Time-In End
+									<span class="text-danger">*</span>
+
+								</label>
+
+								<input type="time"
+									   id="schedule-time-in-end"
+									   class="form-control"
+									   required />
+
+							</div>
+
+
+							<div class="col-12">
+
+								<h6 class="mb-0 mt-2">
+									Attendance Time-Out
+								</h6>
+
+							</div>
+
+
+							<div class="col-md-6">
+
+								<label for="schedule-time-out-start"
+									   class="form-label">
+
+									Time-Out Start
+									<span class="text-danger">*</span>
+
+								</label>
+
+								<input type="time"
+									   id="schedule-time-out-start"
+									   class="form-control"
+									   required />
+
+							</div>
+
+
+							<div class="col-md-6">
+
+								<label for="schedule-time-out-end"
+									   class="form-label">
+
+									Time-Out End
+									<span class="text-danger">*</span>
+
+								</label>
+
+								<input type="time"
+									   id="schedule-time-out-end"
+									   class="form-control"
+									   required />
+
+							</div>
+
+
+							<!-- =================================================
+								 SUNDAY MASS
+								 ================================================= -->
+
+							<div id="sunday-schedule-section"
+								 class="col-12 d-none">
+
+								<hr class="my-2" />
+
+								<div class="alert alert-info mb-0">
+
+									<div class="d-flex">
+
+										<i class="ri-calendar-event-line fs-4 me-2">
+										</i>
+
+										<div>
+
+											<div class="fw-semibold">
+												Every Sunday
+											</div>
+
+											<div class="fs-13">
+												This schedule will be used for recurring Sunday Mass events.
+											</div>
+
+										</div>
+
+									</div>
+
+								</div>
+
+							</div>
+
+
+							<!-- =================================================
+								 MISA DE GALLO
+								 ================================================= -->
+
+							<div id="seasonal-schedule-section"
+								 class="col-12 d-none">
+
+								<hr class="my-2" />
+
+								<h6>
+									Seasonal Date Range
+								</h6>
+
+
+								<div class="row g-3">
+
+									<div class="col-md-3">
+
+										<label for="schedule-start-month"
+											   class="form-label">
+											Start Month
+										</label>
+
+										<select id="schedule-start-month"
+												class="form-select seasonal-field">
+
+											<option value="">
+												Month
+											</option>
+
+											<option value="1">January</option>
+											<option value="2">February</option>
+											<option value="3">March</option>
+											<option value="4">April</option>
+											<option value="5">May</option>
+											<option value="6">June</option>
+											<option value="7">July</option>
+											<option value="8">August</option>
+											<option value="9">September</option>
+											<option value="10">October</option>
+											<option value="11">November</option>
+											<option value="12">December</option>
+
+										</select>
+
+									</div>
+
+
+									<div class="col-md-3">
+
+										<label for="schedule-start-day"
+											   class="form-label">
+											Start Day
+										</label>
+
+										<input type="number"
+											   id="schedule-start-day"
+											   class="form-control seasonal-field"
+											   min="1"
+											   max="31" />
+
+									</div>
+
+
+									<div class="col-md-3">
+
+										<label for="schedule-end-month"
+											   class="form-label">
+											End Month
+										</label>
+
+										<select id="schedule-end-month"
+												class="form-select seasonal-field">
+
+											<option value="">
+												Month
+											</option>
+
+											<option value="1">January</option>
+											<option value="2">February</option>
+											<option value="3">March</option>
+											<option value="4">April</option>
+											<option value="5">May</option>
+											<option value="6">June</option>
+											<option value="7">July</option>
+											<option value="8">August</option>
+											<option value="9">September</option>
+											<option value="10">October</option>
+											<option value="11">November</option>
+											<option value="12">December</option>
+
+										</select>
+
+									</div>
+
+
+									<div class="col-md-3">
+
+										<label for="schedule-end-day"
+											   class="form-label">
+											End Day
+										</label>
+
+										<input type="number"
+											   id="schedule-end-day"
+											   class="form-control seasonal-field"
+											   min="1"
+											   max="31" />
+
+									</div>
+
+								</div>
+
+							</div>
+
+
+							<div class="col-12">
+
+								<hr class="my-2" />
+
+								<div class="form-check form-switch">
+
+									<input type="checkbox"
+										   id="schedule-is-active"
+										   class="form-check-input"
+										   checked />
+
+									<label for="schedule-is-active"
+										   class="form-check-label">
+										Active
+									</label>
+
+								</div>
+
+								<div class="text-muted fs-13 mt-1">
+									Inactive schedules will not be used for automatic event generation.
+								</div>
+
+							</div>
+
+						</div>
+
+					</div>
+
+
+					<div class="modal-footer">
+
+						<button type="button"
+								class="btn btn-light"
+								data-bs-dismiss="modal">
+							Cancel
+						</button>
+
+						<button type="submit"
+								id="save-schedule-button"
+								class="btn btn-primary">
+
+							<i class="ri-save-line align-middle me-1"></i>
+
+							Save Schedule
+
+						</button>
+
+					</div>
+
+				</form>
+
+			</div>
+
+		</div>
+
+	</div>
+
+</div>
+
+
+@section scripts {
+
+	<script src="~/js/pages/admin/event-schedules.js"
+			asp-append-version="true">
+	</script>
+
+}

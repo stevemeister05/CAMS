@@ -1,0 +1,82 @@
+﻿@{
+	ViewData["Title"] =
+		"Access Denied";
+	Layout = "~/Views/Shared/_BlankLayout.cshtml";
+}
+
+
+<div class="row justify-content-center">
+
+	<div class="col-xl-6 col-lg-7 col-md-9">
+
+		<div class="text-center py-5">
+
+			<div class="avatar-xl mx-auto mb-4">
+
+				<div class="avatar-title
+					bg-danger-subtle
+					text-danger
+					rounded-circle
+					display-5">
+
+					<i class="ri-shield-keyhole-line">
+					</i>
+
+				</div>
+
+			</div>
+
+
+			<h1 class="display-5 fw-semibold mb-3">
+				403
+			</h1>
+
+
+			<h4 class="mb-3">
+				Access Denied
+			</h4>
+
+
+			<p class="text-muted mb-4">
+				You do not have permission to access this page.
+			</p>
+
+
+			<div class="d-flex
+				flex-wrap
+				justify-content-center
+				gap-2">
+
+				<button type="button"
+						class="btn btn-light"
+						onclick="history.back();">
+
+					<i class="ri-arrow-left-line
+						align-middle me-1">
+					</i>
+
+					Go Back
+
+				</button>
+
+
+				<a asp-controller="Home"
+				   asp-action="Index"
+				   asp-area=""
+				   class="btn btn-primary">
+
+					<i class="ri-home-4-line
+						align-middle me-1">
+					</i>
+
+					Go to Home
+
+				</a>
+
+			</div>
+
+		</div>
+
+	</div>
+
+</div>

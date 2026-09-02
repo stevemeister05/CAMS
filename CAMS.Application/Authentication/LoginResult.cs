@@ -50,6 +50,13 @@ public sealed class LoginResult
 			message ??
 				"Invalid username or password.");
 
+	public static LoginResult Deactivated(
+		string? message = null)
+		=> new(
+			LoginResultStatus.Deactivated,
+			message ??
+				"This user account has been disabled.");
+
 	public static LoginResult LockedOut(
 		string? message = null)
 		=> new(

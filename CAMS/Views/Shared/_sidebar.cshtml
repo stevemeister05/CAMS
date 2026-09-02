@@ -43,6 +43,20 @@
 			currentController,
 			"Registration",
 			StringComparison.OrdinalIgnoreCase);
+
+	var isEventSchedules =
+		isAdmin &&
+		string.Equals(
+			currentController,
+			"EventSchedule",
+			StringComparison.OrdinalIgnoreCase);
+
+	var isUsers =
+		isAdmin &&
+		string.Equals(
+			currentController,
+			"User",
+			StringComparison.OrdinalIgnoreCase);
 }
 
 <!-- ========== App Menu ========== -->
@@ -170,6 +184,27 @@
 
 				</li>
 
+				<!-- Event Schedules -->
+				@if (User.IsInRole(ApplicationRoles.Administrator))
+				{
+					<li class="nav-item">
+
+						<a asp-area="Admin"
+						   asp-controller="EventSchedule"
+						   asp-action="Index"
+						   class="nav-link @(isEventSchedules ? "active" : "")">
+
+							<i class="ri-calendar-schedule-line"></i>
+
+							<span>
+								Event Schedules
+							</span>
+
+						</a>
+
+					</li>
+				}
+
 
 				<!-- Members -->
 				@if (User.IsInRole(ApplicationRoles.Administrator))
@@ -206,6 +241,27 @@
 
 							<span>
 								Registration Requests
+							</span>
+
+						</a>
+
+					</li>
+				}
+
+				<!-- Users -->
+				@if (User.IsInRole(ApplicationRoles.Administrator))
+				{
+					<li class="nav-item">
+
+						<a asp-area="Admin"
+						   asp-controller="User"
+						   asp-action="Index"
+						   class="nav-link @(isUsers ? "active" : "")">
+
+							<i class="ri-user-settings-line"></i>
+
+							<span>
+								Users
 							</span>
 
 						</a>
