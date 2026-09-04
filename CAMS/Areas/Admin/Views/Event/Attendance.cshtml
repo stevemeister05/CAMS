@@ -199,6 +199,11 @@
 		}
 
 
+		.manual-member-select {
+			min-height: 220px;
+		}
+
+
 		/* =====================================================
 				   HIDDEN ATTENDANCE
 				===================================================== */
@@ -254,10 +259,9 @@
 			}
 		}
 
-
 		@@media (
-					max-width: 575.98px
-				) {
+							max-width: 575.98px
+						) {
 
 			.attendance-content {
 				padding: 0.75rem;
@@ -294,6 +298,7 @@
 <div id="event-attendance-page"
 	 class="attendance-page"
 	 data-event-id="@Model"
+	 data-member-endpoint="/api/v1/member"
 	 data-action-time-in="@((int)AttendanceAction.TimeIn)"
 	 data-action-time-out="@((int)AttendanceAction.TimeOut)">
 
@@ -563,14 +568,41 @@
 							</div>
 
 
-							<span id="attendance-count"
-								  class="badge
-								bg-primary-subtle
-								text-primary fs-sm">
+							<div class="d-flex
+								align-items-center
+								gap-2">
 
-								0
+								<button type="button"
+										id="manual-attendance-button"
+										class="btn btn-primary
+									d-flex
+									align-items-center
+									gap-1
+									px-3"
+										data-bs-toggle="modal"
+										data-bs-target="#manual-attendance-modal">
 
-							</span>
+									<i class="ri-user-add-line
+										align-middle">
+									</i>
+
+									<span>
+										Manual Attendance
+									</span>
+
+								</button>
+
+
+								<span id="attendance-count"
+									  class="badge
+									bg-primary-subtle
+									text-primary fs-sm">
+
+									0
+
+								</span>
+
+							</div>
 
 						</div>
 
@@ -649,6 +681,228 @@
 </div>
 
 
+<!-- =====================================================
+	 MANUAL ATTENDANCE MODAL
+===================================================== -->
+
+<div class="modal fade"
+	 id="manual-attendance-modal"
+	 tabindex="-1"
+	 aria-labelledby="manual-attendance-modal-label"
+	 aria-hidden="true">
+
+	<div class="modal-dialog
+		modal-dialog-centered">
+
+		<div class="modal-content">
+
+			<div class="modal-header">
+
+				<div>
+
+					<h5 id="manual-attendance-modal-label"
+						class="modal-title">
+
+						Record Manual Attendance
+
+					</h5>
+
+
+					<p id="manual-attendance-event"
+					   class="text-muted
+						fs-sm
+						mb-0
+						mt-1">
+					</p>
+
+				</div>
+
+
+				<button type="button"
+						class="btn-close"
+						data-bs-dismiss="modal"
+						aria-label="Close">
+				</button>
+
+			</div>
+
+
+			<div class="modal-body">
+
+				<div id="manual-attendance-error"
+					 class="alert
+					alert-danger
+					d-none"
+					 role="alert">
+				</div>
+
+
+				<!-- Attendance Action -->
+
+				<div class="mb-3">
+
+					<label class="form-label">
+						Attendance Action
+					</label>
+
+
+					<div class="d-flex gap-2">
+
+						<input type="radio"
+							   class="btn-check"
+							   name="manual-attendance-action"
+							   id="manual-time-in"
+							   value="@((int)AttendanceAction.TimeIn)"
+							   autocomplete="off">
+
+
+						<label class="btn
+							btn-outline-success
+							flex-fill"
+							   for="manual-time-in">
+
+							<i class="ri-login-box-line
+								align-middle
+								me-1">
+							</i>
+
+							Time In
+
+						</label>
+
+
+						<input type="radio"
+							   class="btn-check"
+							   name="manual-attendance-action"
+							   id="manual-time-out"
+							   value="@((int)AttendanceAction.TimeOut)"
+							   autocomplete="off">
+
+
+						<label class="btn
+							btn-outline-warning
+							flex-fill"
+							   for="manual-time-out">
+
+							<i class="ri-logout-box-line
+								align-middle
+								me-1">
+							</i>
+
+							Time Out
+
+						</label>
+
+					</div>
+
+				</div>
+
+
+				<!-- Member Search -->
+
+				<div class="mb-3">
+
+					<label for="manual-member-search"
+						   class="form-label">
+
+						Search Member
+
+					</label>
+
+
+					<div class="position-relative">
+
+						<input type="search"
+							   id="manual-member-search"
+							   class="form-control pe-5"
+							   placeholder="Search by name or mobile number"
+							   autocomplete="off">
+
+
+						<i class="ri-search-line
+							position-absolute
+							top-50
+							end-0
+							translate-middle-y
+							me-3
+							text-muted">
+						</i>
+
+					</div>
+
+				</div>
+
+
+				<!-- Member Selection -->
+
+				<div>
+
+					<label for="manual-member-select"
+						   class="form-label">
+
+						Member
+
+					</label>
+
+
+					<select id="manual-member-select"
+							class="form-select
+						manual-member-select"
+							size="7">
+
+						<option value=""
+								disabled>
+
+							Loading members...
+
+						</option>
+
+					</select>
+
+
+					<div id="manual-member-help"
+						 class="form-text">
+
+						Select a member to record attendance.
+
+					</div>
+
+				</div>
+
+			</div>
+
+
+			<div class="modal-footer">
+
+				<button type="button"
+						class="btn btn-light"
+						data-bs-dismiss="modal">
+
+					Cancel
+
+				</button>
+
+
+				<button type="button"
+						id="manual-record-button"
+						class="btn btn-primary">
+
+					<i class="ri-check-line
+						align-middle
+						me-1">
+					</i>
+
+					Record Attendance
+
+				</button>
+
+			</div>
+
+		</div>
+
+	</div>
+
+</div>
 @section scripts {
 
 	<!-- Attendance-specific libraries only -->
@@ -657,9 +911,11 @@
 			asp-append-version="true">
 	</script>
 
+
 	<script src="~/assets/libs/qrcodejs/qrcode.min.js"
 			asp-append-version="true">
 	</script>
+
 
 	<script src="~/js/pages/admin/event-attendance.js"
 			asp-append-version="true">

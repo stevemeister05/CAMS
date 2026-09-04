@@ -19,6 +19,9 @@
 	const eventId =
 		page.dataset.eventId;
 
+	const memberEndpoint =
+		page.dataset.memberEndpoint;
+
 
 	const AttendanceAction =
 		Object.freeze({
@@ -61,6 +64,12 @@
 	let attendanceVisible =
 		true;
 
+	let members =
+		[];
+
+	let membersLoaded =
+		false;
+
 
 	// =========================================================
 	// ELEMENTS
@@ -68,7 +77,7 @@
 
 	const pageEventName =
 		document.getElementById(
-			"page-event-name");
+			"page-event");
 
 	const pageEventDate =
 		document.getElementById(
@@ -138,6 +147,43 @@
 			"toggle-attendance-text");
 
 
+	const manualAttendanceModalElement =
+		document.getElementById(
+			"manual-attendance-modal");
+
+	const manualAttendanceEvent =
+		document.getElementById(
+			"manual-attendance-event");
+
+	const manualAttendanceError =
+		document.getElementById(
+			"manual-attendance-error");
+
+	const manualMemberSearch =
+		document.getElementById(
+			"manual-member-search");
+
+	const manualMemberSelect =
+		document.getElementById(
+			"manual-member-select");
+
+	const manualMemberHelp =
+		document.getElementById(
+			"manual-member-help");
+
+	const manualTimeIn =
+		document.getElementById(
+			"manual-time-in");
+
+	const manualTimeOut =
+		document.getElementById(
+			"manual-time-out");
+
+	const manualRecordButton =
+		document.getElementById(
+			"manual-record-button");
+
+
 	// =========================================================
 	// INITIALIZATION
 	// =========================================================
@@ -163,6 +209,8 @@
 		initializeActions();
 
 		initializeAttendanceToggle();
+
+		initializeManualAttendance();
 
 
 		const loaded =
@@ -569,7 +617,8 @@
 
 
 		qrAction.className =
-			selectedAction === "TimeIn"
+			selectedAction ===
+				"TimeIn"
 				? "badge bg-success-subtle text-success qr-action-badge"
 				: "badge bg-warning-subtle text-warning qr-action-badge";
 
@@ -724,6 +773,610 @@
 
 
 	// =========================================================
+	// MANUAL ATTENDANCE
+	// =========================================================
+
+	function initializeManualAttendance() {
+
+		if (
+			!manualAttendanceModalElement ||
+			!manualMemberSearch ||
+			!manualMemberSelect ||
+			!manualTimeIn ||
+			!manualTimeOut ||
+			!manualRecordButton
+		) {
+			return;
+		}
+
+
+		manualAttendanceModalElement
+			.addEventListener(
+				"show.bs.modal",
+				async () => {
+
+					clearManualAttendanceError();
+
+
+					manualMemberSearch.value =
+						"";
+
+
+					setManualAction(
+						selectedAction);
+
+
+					if (manualAttendanceEvent) {
+
+						manualAttendanceEvent.textContent =
+							currentEvent?.name ??
+							"Current event";
+					}
+
+
+					if (!membersLoaded) {
+
+						await loadMembers();
+					}
+					else {
+
+						renderManualMembers();
+					}
+				});
+
+
+		manualMemberSearch.addEventListener(
+			"input",
+			renderManualMembers);
+
+
+		manualTimeIn.addEventListener(
+			"change",
+			() => {
+
+				if (
+					manualTimeIn.checked
+				) {
+
+					clearManualAttendanceError();
+
+					renderManualMembers();
+				}
+			});
+
+
+		manualTimeOut.addEventListener(
+			"change",
+			() => {
+
+				if (
+					manualTimeOut.checked
+				) {
+
+					clearManualAttendanceError();
+
+					renderManualMembers();
+				}
+			});
+
+
+		manualRecordButton.addEventListener(
+			"click",
+			recordManualAttendance);
+	}
+
+
+	async function loadMembers() {
+
+		if (!memberEndpoint) {
+
+			showManualAttendanceError(
+				"The member API endpoint is not configured.");
+
+			return;
+		}
+
+
+		manualMemberSelect.innerHTML =
+			`<option value="" disabled>Loading members...</option>`;
+
+
+		try {
+
+			const separator =
+				memberEndpoint.includes("?")
+					? "&"
+					: "?";
+
+
+			const response =
+				await camsApi.get(
+					memberEndpoint +
+					`${separator}page=1&pageSize=1000`);
+
+
+			const payload =
+				await camsApi.readJson(
+					response);
+
+
+			if (!response.ok) {
+
+				throw new Error(
+					camsApi.getErrorMessage(
+						payload,
+						response.status,
+						"Unable to load members."));
+			}
+
+
+			const items =
+				payload?.data?.items ??
+				payload?.items ??
+				payload?.data ??
+				[];
+
+
+			members =
+				Array.isArray(
+					items)
+					? items.filter(
+						member =>
+							member?.isActive !==
+							false)
+					: [];
+
+
+			members.sort(
+				(a, b) =>
+					getMemberDisplayName(
+						a)
+						.localeCompare(
+							getMemberDisplayName(
+								b)));
+
+
+			membersLoaded =
+				true;
+
+
+			renderManualMembers();
+		}
+		catch (error) {
+
+			console.error(
+				"Unable to load members.",
+				error);
+
+
+			manualMemberSelect.innerHTML =
+				`<option value="" disabled>Unable to load members.</option>`;
+
+
+			showManualAttendanceError(
+				error.message ??
+				"Unable to load members.");
+		}
+	}
+
+
+	function renderManualMembers() {
+
+		if (!manualMemberSelect) {
+			return;
+		}
+
+
+		const previousValue =
+			manualMemberSelect.value;
+
+		const search =
+			manualMemberSearch?.value
+				.trim()
+				.toLowerCase() ??
+			"";
+
+		const action =
+			getManualAction();
+
+
+		const filteredMembers =
+			members.filter(
+				member => {
+
+					if (
+						!isMemberEligibleForManualAction(
+							member,
+							action)
+					) {
+						return false;
+					}
+
+
+					if (!search) {
+						return true;
+					}
+
+
+					const searchableText =
+						`${getMemberDisplayName(
+							member)} ${member.mobileNumber ?? ""}`
+							.toLowerCase();
+
+
+					return searchableText.includes(
+						search);
+				});
+
+
+		manualMemberSelect.innerHTML =
+			"";
+
+
+		if (
+			filteredMembers.length ===
+			0
+		) {
+
+			const option =
+				document.createElement(
+					"option");
+
+
+			option.disabled =
+				true;
+
+
+			option.textContent =
+				search
+					? "No matching members found."
+					: action ===
+						AttendanceAction.TimeOut
+						? "No members are currently eligible for time out."
+						: "No members are currently eligible for time in.";
+
+
+			manualMemberSelect.appendChild(
+				option);
+		}
+		else {
+
+			for (
+				const member
+				of filteredMembers
+			) {
+
+				const option =
+					document.createElement(
+						"option");
+
+
+				option.value =
+					member.id;
+
+
+				const mobileNumber =
+					member.mobileNumber
+						? ` — ${member.mobileNumber}`
+						: "";
+
+
+				option.textContent =
+					`${getMemberDisplayName(
+						member)}${mobileNumber}`;
+
+
+				manualMemberSelect.appendChild(
+					option);
+			}
+		}
+
+
+		if (
+			previousValue &&
+			Array.from(
+				manualMemberSelect.options)
+				.some(
+					option =>
+						option.value ===
+						previousValue)
+		) {
+
+			manualMemberSelect.value =
+				previousValue;
+		}
+
+
+		if (manualMemberHelp) {
+
+			manualMemberHelp.textContent =
+				action ===
+					AttendanceAction.TimeOut
+					? "Only members who have timed in and have not timed out are shown."
+					: "Members who already have attendance for this event are not shown.";
+		}
+	}
+
+
+	function isMemberEligibleForManualAction(
+		member,
+		action) {
+
+		if (!member?.id) {
+			return false;
+		}
+
+
+		const attendance =
+			attendanceRecords.find(
+				record =>
+					String(
+						record.memberId ??
+						"")
+						.toLowerCase() ===
+					String(
+						member.id)
+						.toLowerCase());
+
+
+		if (
+			action ===
+			AttendanceAction.TimeOut
+		) {
+
+			return Boolean(
+				attendance?.timeIn) &&
+				!attendance?.timeOut;
+		}
+
+
+		return !attendance;
+	}
+
+
+	function getMemberDisplayName(
+		member) {
+
+		const explicitName =
+			member?.fullName ??
+			member?.name;
+
+
+		if (explicitName) {
+			return explicitName;
+		}
+
+
+		return [
+			member?.firstName,
+			member?.middleName,
+			member?.lastName
+		]
+			.filter(
+				value =>
+					Boolean(
+						value
+							?.trim
+							?.()))
+			.join(
+				" ") ||
+			"Unnamed Member";
+	}
+
+
+	function setManualAction(
+		action) {
+
+		const normalizedAction =
+			normalizeAction(
+				action);
+
+
+		manualTimeIn.checked =
+			normalizedAction ===
+			"TimeIn";
+
+		manualTimeOut.checked =
+			normalizedAction ===
+			"TimeOut";
+	}
+
+
+	function getManualAction() {
+
+		return manualTimeOut?.checked
+			? AttendanceAction.TimeOut
+			: AttendanceAction.TimeIn;
+	}
+
+
+	async function recordManualAttendance() {
+
+		clearManualAttendanceError();
+
+
+		const memberId =
+			manualMemberSelect?.value;
+
+
+		if (!memberId) {
+
+			showManualAttendanceError(
+				"Please select a member.");
+
+			return;
+		}
+
+
+		const action =
+			getManualAction();
+
+		const actionName =
+			normalizeAction(
+				action);
+
+		const windowState =
+			getAttendanceWindowState(
+				actionName);
+
+
+		/*
+		 * Manual attendance must follow the same
+		 * configured attendance window as QR and
+		 * fingerprint attendance.
+		 */
+		if (
+			windowState.state !==
+			"Open"
+		) {
+
+			showManualAttendanceError(
+				actionName ===
+					"TimeOut"
+					? "Time-out is not currently available for this event."
+					: "Time-in is not currently available for this event.");
+
+			return;
+		}
+
+
+		camsUi.setButtonLoading(
+			manualRecordButton,
+			true,
+			"Recording...");
+
+
+		try {
+
+			const response =
+				await camsApi.fetch(
+					"/api/v1/attendance/manual",
+					{
+						method:
+							"POST",
+
+						body:
+							JSON.stringify({
+								eventId:
+									eventId,
+
+								memberId:
+									memberId,
+
+								action:
+									action
+							})
+					});
+
+
+			const payload =
+				await camsApi.readJson(
+					response);
+
+
+			if (!response.ok) {
+
+				throw new Error(
+					camsApi.getErrorMessage(
+						payload,
+						response.status,
+						"Unable to record attendance."));
+			}
+
+
+			const attendance =
+				payload?.data ??
+				payload;
+
+
+			/*
+			 * Update immediately.
+			 *
+			 * SignalR may also send AttendanceRecorded,
+			 * but updateAttendanceList() merges by ID,
+			 * so it will not create a duplicate.
+			 */
+			if (attendance) {
+
+				updateAttendanceList(
+					attendance);
+			}
+
+
+			const selectedMember =
+				members.find(
+					member =>
+						String(
+							member.id) ===
+						String(
+							memberId));
+
+
+			camsUi.showSuccessToast(
+				`${formatAction(
+					actionName)} recorded for ${getMemberDisplayName(
+						selectedMember)}.`);
+
+
+			bootstrap.Modal
+				.getInstance(
+					manualAttendanceModalElement)
+				?.hide();
+		}
+		catch (error) {
+
+			console.error(
+				"Unable to record manual attendance.",
+				error);
+
+
+			showManualAttendanceError(
+				error.message ??
+				"Unable to record attendance.");
+		}
+		finally {
+
+			camsUi.setButtonLoading(
+				manualRecordButton,
+				false);
+		}
+	}
+
+
+	function showManualAttendanceError(
+		message) {
+
+		if (!manualAttendanceError) {
+			return;
+		}
+
+
+		manualAttendanceError.textContent =
+			message;
+
+
+		manualAttendanceError.classList.remove(
+			"d-none");
+	}
+
+
+	function clearManualAttendanceError() {
+
+		if (!manualAttendanceError) {
+			return;
+		}
+
+
+		manualAttendanceError.textContent =
+			"";
+
+
+		manualAttendanceError.classList.add(
+			"d-none");
+	}
+
+
+	// =========================================================
 	// ATTENDANCE
 	// =========================================================
 
@@ -781,26 +1434,28 @@
 				<td>
 
 					${camsUtils.formatTime(
-						attendance.timeIn,
-						{
-							assumeUtc: true
-						})}
+					attendance.timeIn,
+					{
+						assumeUtc:
+							true
+					})}
 
 				</td>
 
 				<td>
 
 					${attendance.timeOut
-					? camsUtils.formatTime(
-						attendance.timeOut,
-						{
-							assumeUtc: true
-						})
+				? camsUtils.formatTime(
+					attendance.timeOut,
+					{
+						assumeUtc:
+							true
+					})
 				: `
-							<span class="text-muted">
-								—
-							</span>
-						`
+						<span class="text-muted">
+							—
+						</span>
+					`
 			}
 
 				</td>
@@ -837,7 +1492,8 @@
 
 
 		if (
-			existingIndex >= 0
+			existingIndex >=
+			0
 		) {
 
 			attendanceRecords[
@@ -858,6 +1514,22 @@
 
 		renderAttendances(
 			attendanceRecords);
+
+
+		/*
+		 * Keep the manual-member choices synchronized
+		 * when attendance changes through QR, manual,
+		 * fingerprint, or another connected browser.
+		 */
+		if (
+			manualAttendanceModalElement
+				?.classList
+				.contains(
+					"show")
+		) {
+
+			renderManualMembers();
+		}
 	}
 
 
@@ -871,7 +1543,6 @@
 			attendance.memberName ??
 			"");
 	}
-
 
 	// =========================================================
 	// ATTENDANCE ACTION
@@ -902,11 +1573,8 @@
 
 
 		/*
-		 * The Hub previously accepted:
-		 *
-		 * JoinEvent(eventId, action)
-		 *
-		 * so rejoin using the newly selected action.
+		 * Rejoin using the newly selected
+		 * attendance action.
 		 */
 		await joinSelectedEvent();
 
@@ -950,20 +1618,24 @@
 
 			return (
 				camsUtils.formatTimeOnly(
-					currentEvent.attendanceTimeInStart) +
+					currentEvent
+						.attendanceTimeInStart) +
 				" – " +
 				camsUtils.formatTimeOnly(
-					currentEvent.attendanceTimeInEnd)
+					currentEvent
+						.attendanceTimeInEnd)
 			);
 		}
 
 
 		return (
 			camsUtils.formatTimeOnly(
-				currentEvent.attendanceTimeOutStart) +
+				currentEvent
+					.attendanceTimeOutStart) +
 			" – " +
 			camsUtils.formatTimeOnly(
-				currentEvent.attendanceTimeOutEnd)
+				currentEvent
+					.attendanceTimeOutEnd)
 		);
 	}
 
@@ -1022,6 +1694,8 @@
 			? AttendanceAction.TimeOut
 			: AttendanceAction.TimeIn;
 	}
+
+
 	// =========================================================
 	// SIGNALR
 	// =========================================================
@@ -1073,14 +1747,6 @@
 					}
 
 
-					/*
-					 * renderQr() performs another attendance
-					 * window check before displaying the QR.
-					 *
-					 * This prevents a late SignalR update
-					 * from redisplaying the QR after the
-					 * selected attendance period has closed.
-					 */
 					renderQr(
 						qr);
 				});
@@ -1183,9 +1849,7 @@
 		}
 
 
-		if (
-			!currentEvent
-		) {
+		if (!currentEvent) {
 			return;
 		}
 
@@ -1296,43 +1960,8 @@
 
 
 	// =========================================================
-	// DATE / TIME
+	// ATTENDANCE WINDOW
 	// =========================================================
-
-	function formatAttendanceTime(
-		value) {
-
-		if (!value) {
-			return "—";
-		}
-
-
-		const date =
-			camsUtils.parseDateTime(
-				value);
-
-
-		if (!date) {
-
-			return camsUtils.escapeHtml(
-				value);
-		}
-
-
-		return date.toLocaleTimeString(
-			"en-PH",
-			{
-				hour:
-					"numeric",
-
-				minute:
-					"2-digit",
-
-				hour12:
-					true
-			});
-	}
-
 
 	function getAttendanceWindowState(
 		action) {
@@ -1367,7 +1996,7 @@
 
 
 		/*
-		 * Event already occurred on a previous date.
+		 * Event already occurred.
 		 */
 		if (
 			eventDate <
@@ -1382,7 +2011,7 @@
 
 
 		/*
-		 * Event is scheduled for a future date.
+		 * Event has not occurred yet.
 		 */
 		if (
 			eventDate >
@@ -1441,9 +2070,6 @@
 		}
 
 
-		/*
-		 * Selected attendance action has not commenced.
-		 */
 		if (
 			now.seconds <
 			start
@@ -1456,9 +2082,6 @@
 		}
 
 
-		/*
-		 * Selected attendance action already ended.
-		 */
 		if (
 			now.seconds >
 			end
@@ -1725,8 +2348,8 @@
 
 
 		/*
-		 * Keep the selected attendance action and configured
-		 * period visible even when the QR itself is hidden.
+		 * Keep the selected attendance action
+		 * and period visible while unavailable.
 		 */
 		qrAction.textContent =
 			formatAction(
@@ -1785,10 +2408,9 @@
 
 
 					/*
-					 * Only refresh the QR display when the
-					 * attendance-window state changes.
+					 * Only refresh when the state changes.
 					 *
-					 * For example:
+					 * Examples:
 					 *
 					 * NotStarted -> Open
 					 * Open -> Closed
@@ -1809,11 +2431,28 @@
 						currentState ===
 						"Open"
 					) {
+
 						await joinSelectedEvent();
 					}
 
 
 					await loadQr();
+
+
+					/*
+					 * If the manual-attendance modal
+					 * is currently open, refresh its
+					 * eligible members/action state too.
+					 */
+					if (
+						manualAttendanceModalElement
+							?.classList
+							.contains(
+								"show")
+					) {
+
+						renderManualMembers();
+					}
 
 				},
 				1000);
