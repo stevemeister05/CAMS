@@ -50,6 +50,24 @@ public class AttendanceRepository
 				cancellationToken);
 	}
 
+	public async Task<IReadOnlyList<Domain.Entities.Attendance>> GetByMemberAsync(
+		Guid memberId,
+		CancellationToken cancellationToken = default)
+	{
+		return await _context.Attendances
+			.AsNoTracking()
+			.Include(x =>
+				x.Event)
+			.Where(x =>
+				x.MemberId == memberId)
+			.OrderByDescending(x =>
+				x.Event.EventDate)
+			.ThenByDescending(x =>
+				x.TimeIn)
+			.ToListAsync(
+				cancellationToken);
+	}
+
 	public async Task AddAsync(
 		Domain.Entities.Attendance attendance,
 		CancellationToken cancellationToken = default)

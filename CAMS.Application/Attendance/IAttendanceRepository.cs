@@ -15,6 +15,10 @@ public interface IAttendanceRepository
 		Guid eventId,
 		CancellationToken cancellationToken = default);
 
+	Task<IReadOnlyList<Domain.Entities.Attendance>> GetByMemberAsync(
+		Guid memberId,
+		CancellationToken cancellationToken = default);
+
 	Task AddAsync(
 		Domain.Entities.Attendance attendance,
 		CancellationToken cancellationToken = default);

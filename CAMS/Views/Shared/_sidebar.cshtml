@@ -57,6 +57,41 @@
 			currentController,
 			"User",
 			StringComparison.OrdinalIgnoreCase);
+
+	var isReports =
+		isAdmin &&
+		string.Equals(
+			currentController,
+			"Report",
+			StringComparison.OrdinalIgnoreCase);
+
+	var isMemberAttendanceReport =
+		isReports &&
+		string.Equals(
+			currentAction,
+			"MemberAttendance",
+			StringComparison.OrdinalIgnoreCase);
+
+	var isMemberAttendanceCountReport =
+		isReports &&
+		string.Equals(
+			currentAction,
+			"MemberAttendanceCount",
+			StringComparison.OrdinalIgnoreCase);
+
+	var isEventAttendanceSummaryReport =
+		isReports &&
+		string.Equals(
+			currentAction,
+			"EventAttendanceSummary",
+			StringComparison.OrdinalIgnoreCase);
+
+	var isIndividualEventAttendanceReport =
+		isReports &&
+		string.Equals(
+			currentAction,
+			"IndividualEventAttendance",
+			StringComparison.OrdinalIgnoreCase);
 }
 
 <!-- ========== App Menu ========== -->
@@ -265,6 +300,106 @@
 							</span>
 
 						</a>
+
+					</li>
+				}
+
+				<!-- =====================================================
+	 REPORTING
+===================================================== -->
+				@if (User.IsInRole(ApplicationRoles.Administrator))
+				{
+					<li class="menu-title">
+
+						<span>
+							Reporting
+						</span>
+
+					</li>
+
+
+					<li class="nav-item">
+
+						<a class="nav-link menu-link @(isReports ? "active" : "")"
+						   href="#sidebarReports"
+						   data-bs-toggle="collapse"
+						   role="button"
+						   aria-expanded="@(isReports ? "true" : "false")"
+						   aria-controls="sidebarReports">
+
+							<i class="ri-file-chart-line"></i>
+
+							<span>
+								Reports
+							</span>
+
+						</a>
+
+
+						<div class="collapse menu-dropdown @(isReports ? "show" : "")"
+							 id="sidebarReports">
+
+							<ul class="nav nav-sm flex-column">
+
+
+								<li class="nav-item">
+
+									<a asp-area="Admin"
+									   asp-controller="Report"
+									   asp-action="MemberAttendance"
+									   class="nav-link @(isMemberAttendanceReport ? "active" : "")">
+
+										Member Attendance
+
+									</a>
+
+								</li>
+
+
+								<li class="nav-item">
+
+									<a asp-area="Admin"
+									   asp-controller="Report"
+									   asp-action="MemberAttendanceCount"
+									   class="nav-link @(isMemberAttendanceCountReport ? "active" : "")">
+
+										Member Attendance Count
+
+									</a>
+
+								</li>
+
+
+								<li class="nav-item">
+
+									<a asp-area="Admin"
+									   asp-controller="Report"
+									   asp-action="EventAttendanceSummary"
+									   class="nav-link @(isEventAttendanceSummaryReport ? "active" : "")">
+
+										Event Attendance Summary
+
+									</a>
+
+								</li>
+
+
+								<li class="nav-item">
+
+									<a asp-area="Admin"
+									   asp-controller="Report"
+									   asp-action="IndividualEventAttendance"
+									   class="nav-link @(isIndividualEventAttendanceReport ? "active" : "")">
+
+										Individual Event Attendance
+
+									</a>
+
+								</li>
+
+							</ul>
+
+						</div>
 
 					</li>
 				}

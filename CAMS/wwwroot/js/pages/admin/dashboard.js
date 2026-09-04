@@ -407,8 +407,11 @@
 
 				<td>
 
-					${formatDateTime(
-					attendance.timeIn)}
+					${camsUtils.formatTime(
+						attendance.timeIn,
+						{
+							assumeUtc: true
+						})}
 
 				</td>
 
@@ -416,8 +419,11 @@
 				<td>
 
 					${attendance.timeOut
-				? formatDateTime(
-					attendance.timeOut)
+						? camsUtils.formatTime(
+							attendance.timeOut,
+							{
+								assumeUtc: true
+							})
 				: `<span class="text-muted">—</span>`
 			}
 

@@ -2,7 +2,7 @@
 
 @{
     ViewBag.Title = "Signin";
-    Layout = "~/Views/Shared/_BlankLayout.cshtml";
+    Layout = "~/Views/Shared/_BlankLayout2.cshtml";
 }
 <section class="auth-page-wrapper py-5 position-relative d-flex align-items-center justify-content-center min-vh-100">
     <div class="container">
@@ -322,14 +322,29 @@
 
             function getSafeReturnUrl() {
 
-                const returnUrl =
+                const hiddenReturnUrl =
+                    document.getElementById(
+                        "return-url")
+                        ?.value;
+
+
+                const query =
                     new URLSearchParams(
-                        window.location.search
-                    ).get("returnUrl");
+                        window.location.search);
+
+
+                const returnUrl =
+                    hiddenReturnUrl ||
+                    query.get(
+                        "returnUrl") ||
+                    query.get(
+                        "ReturnUrl");
+
 
                 if (!returnUrl) {
                     return null;
                 }
+
 
                 try {
 
@@ -338,12 +353,14 @@
                             returnUrl,
                             window.location.origin);
 
+
                     if (
                         url.origin !==
                         window.location.origin
                     ) {
                         return null;
                     }
+
 
                     return (
                         url.pathname +

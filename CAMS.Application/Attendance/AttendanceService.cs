@@ -154,12 +154,46 @@ public class AttendanceService : IAttendanceService
 		};
 	}
 
+	public async Task<IReadOnlyList<MemberAttendanceHistoryResponse>> GetByMemberAsync(
+		Guid memberId,
+		CancellationToken cancellationToken = default)
+	{
+		ValidateMemberId(
+			memberId);
+
+
+		var member =
+			await _memberRepository.GetByIdAsync(
+				memberId,
+				cancellationToken);
+
+
+		if (member is null)
+		{
+			throw new NotFoundException(
+				"Member was not found.");
+		}
+
+
+		var attendances =
+			await _attendanceRepository.GetByMemberAsync(
+				memberId,
+				cancellationToken);
+
+
+		return attendances
+			.Select(MapToMemberHistoryResponse)
+			.ToList();
+	}
+
 	public async Task<AttendanceResponse> RecordQrAttendanceAsync(
 		Guid memberId,
 		RecordQrAttendanceRequest request,
 		CancellationToken cancellationToken = default)
 	{
-		ValidateMemberId(memberId);
+		ValidateMemberId(
+			memberId);
+
 
 		if (request is null)
 		{
@@ -167,22 +201,24 @@ public class AttendanceService : IAttendanceService
 				"Attendance information is required.");
 		}
 
-		ValidateEventId(request.EventId);
 
-		if (string.IsNullOrWhiteSpace(request.Token))
+		if (string.IsNullOrWhiteSpace(
+			request.Token))
 		{
 			throw new ValidationException(
 				"QR code token is required.");
 		}
 
+
 		var token =
 			request.Token.Trim();
 
-		// Validate QR session
+
 		var qrSession =
 			await _qrSessionRepository.GetByTokenAsync(
 				token,
 				cancellationToken);
+
 
 		if (qrSession is null)
 		{
@@ -190,27 +226,36 @@ public class AttendanceService : IAttendanceService
 				"The QR code is invalid or has expired.");
 		}
 
-		if (qrSession.EventId != request.EventId)
-		{
-			throw new ConflictException(
-				"The QR code does not belong to this event.");
-		}
 
 		var nowUtc =
 			_clock.UtcNow;
 
-		if (qrSession.ExpiresAt <= nowUtc)
+
+		if (
+			qrSession.ExpiresAt <=
+			nowUtc
+		)
 		{
 			throw new ConflictException(
 				"The QR code has expired.");
 		}
 
+
 		return await RecordAttendanceAsync(
-			memberId: memberId,
-			eventId: qrSession.EventId,
-			action: qrSession.Action,
-			method: AttendanceMethod.QRCode,
-			cancellationToken: cancellationToken);
+			memberId:
+				memberId,
+
+			eventId:
+				qrSession.EventId,
+
+			action:
+				qrSession.Action,
+
+			method:
+				AttendanceMethod.QRCode,
+
+			cancellationToken:
+				cancellationToken);
 	}
 
 	public async Task<AttendanceResponse>
@@ -559,56 +604,34 @@ public class AttendanceService : IAttendanceService
 				!string.IsNullOrWhiteSpace(x)));
 	}
 
-	private static bool IsAttendanceWindowOpen(
-	Domain.Entities.Event @event,
-	AttendanceAction action,
-	DateTime localNow)
+	private static MemberAttendanceHistoryResponse MapToMemberHistoryResponse(
+		Domain.Entities.Attendance attendance)
 	{
-		var currentDate =
-			DateOnly.FromDateTime(
-				localNow);
-
-
-		if (
-			@event.EventDate !=
-			currentDate
-		)
+		return new MemberAttendanceHistoryResponse
 		{
-			return false;
-		}
+			Id =
+				attendance.Id,
 
+			EventId =
+				attendance.EventId,
 
-		var currentTime =
-			TimeOnly.FromDateTime(
-				localNow);
+			EventName =
+				attendance.Event.Name,
 
+			EventDate =
+				attendance.Event.EventDate,
 
-		if (
-			action ==
-			AttendanceAction.TimeIn
-		)
-		{
-			return
-				currentTime >=
-					@event.AttendanceTimeInStart &&
-				currentTime <=
-					@event.AttendanceTimeInEnd;
-		}
+			TimeIn =
+				attendance.TimeIn,
 
+			TimeOut =
+				attendance.TimeOut,
 
-		if (
-			action ==
-			AttendanceAction.TimeOut
-		)
-		{
-			return
-				currentTime >=
-					@event.AttendanceTimeOutStart &&
-				currentTime <=
-					@event.AttendanceTimeOutEnd;
-		}
+			TimeInMethod =
+				attendance.TimeInMethod,
 
-
-		return false;
+			TimeOutMethod =
+				attendance.TimeOutMethod
+		};
 	}
 }

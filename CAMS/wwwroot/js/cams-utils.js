@@ -6,7 +6,8 @@
 	// =========================================================
 
 	function parseDateTime(
-		value) {
+		value,
+		options = {}) {
 
 		if (!value) {
 			return null;
@@ -20,6 +21,11 @@
 		}
 
 
+		const {
+			assumeUtc = false
+		} = options;
+
+
 		let normalizedValue =
 			value.toString();
 
@@ -29,19 +35,38 @@
 		 * more than 3 fractional second digits.
 		 *
 		 * JavaScript only needs milliseconds.
-		 *
-		 * Example:
-		 *
-		 * 2026-08-30T10:18:10.1583153
-		 *
-		 * becomes:
-		 *
-		 * 2026-08-30T10:18:10.158
 		 */
 		normalizedValue =
 			normalizedValue.replace(
 				/(\.\d{3})\d+/,
 				"$1");
+
+
+		/*
+		 * Attendance/audit timestamps are stored as UTC.
+		 *
+		 * If the API returns a DateTime without timezone
+		 * information, explicitly mark it as UTC.
+		 *
+		 * Example:
+		 *
+		 * 2026-09-03T06:00:00
+		 *
+		 * becomes:
+		 *
+		 * 2026-09-03T06:00:00Z
+		 */
+		if (
+			assumeUtc &&
+			!/[zZ]$/.test(
+				normalizedValue) &&
+			!/[+-]\d{2}:\d{2}$/.test(
+				normalizedValue)
+		) {
+
+			normalizedValue +=
+				"Z";
+		}
 
 
 		const date =
@@ -206,13 +231,18 @@
 			const {
 				locale = "en-PH",
 				includeSeconds = false,
-				hour12 = true
+				hour12 = true,
+				assumeUtc = false
 			} = options;
 
 
 			const date =
 				parseDateTime(
-					value);
+					value,
+					{
+						assumeUtc:
+							assumeUtc
+					});
 
 
 			if (!date) {
@@ -252,6 +282,64 @@
 
 
 			return date.toLocaleString(
+				locale,
+				formatOptions);
+		},
+
+		formatTime(
+			value,
+			options = {}) {
+
+			if (!value) {
+				return "-";
+			}
+
+
+			const {
+				locale = "en-PH",
+				includeSeconds = false,
+				hour12 = true,
+				assumeUtc = false
+			} = options;
+
+
+			const date =
+				parseDateTime(
+					value,
+					{
+						assumeUtc:
+							assumeUtc
+					});
+
+
+			if (!date) {
+				return value;
+			}
+
+
+			const formatOptions = {
+
+				hour:
+					"numeric",
+
+				minute:
+					"2-digit",
+
+				hour12:
+					hour12
+			};
+
+
+			if (
+				includeSeconds
+			) {
+
+				formatOptions.second =
+					"2-digit";
+			}
+
+
+			return date.toLocaleTimeString(
 				locale,
 				formatOptions);
 		},

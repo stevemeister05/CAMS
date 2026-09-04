@@ -14,6 +14,8 @@ public enum LoginResultStatus
 	LockedOut,
 
 	NotAllowed,
+	PendingApproval,
+	RegistrationRejected,
 
 	RequiresTwoFactor
 }

@@ -15,6 +15,10 @@
       "files": [
         "dist/browser/signalr.min.js"
       ]
+    },
+    {
+      "library": "html5-qrcode@2.3.8",
+      "destination": "wwwroot/assets/libs/html5-qrcode/"
     }
   ]
 }

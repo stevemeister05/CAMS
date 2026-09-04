@@ -9,6 +9,10 @@ public interface IAttendanceService
 		Guid eventId,
 		CancellationToken cancellationToken = default);
 
+	Task<IReadOnlyList<MemberAttendanceHistoryResponse>> GetByMemberAsync(
+		Guid memberId,
+		CancellationToken cancellationToken = default);
+
 	Task<AttendanceResponse> RecordQrAttendanceAsync(
 		Guid memberId,
 		RecordQrAttendanceRequest request,

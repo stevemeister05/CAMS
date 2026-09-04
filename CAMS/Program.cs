@@ -10,6 +10,7 @@ using CAMS.Application.Event;
 using CAMS.Application.EventSchedule;
 using CAMS.Application.Member;
 using CAMS.Application.Registration;
+using CAMS.Application.Report;
 using CAMS.Application.Settings;
 using CAMS.Application.User;
 using CAMS.Infrastructure.Common.Clocking;
@@ -17,13 +18,16 @@ using CAMS.Infrastructure.Data;
 using CAMS.Infrastructure.Data.Repositories;
 using CAMS.Infrastructure.Data.Seeders;
 using CAMS.Infrastructure.Identity;
+using CAMS.Infrastructure.Reporting;
 using CAMS.Infrastructure.Repositories;
 using CAMS.Web.BackgroundServices;
 using CAMS.Web.Extensions;
 using CAMS.Web.Hubs;
 using CAMS.Web.Middlewares;
 using CAMS.Web.Realtime;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,6 +37,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<RegistrationSettings>(builder.Configuration.GetSection("Registration"));
 builder.Services.Configure<EventGenerationSettings>(builder.Configuration.GetSection("EventGeneration"));
 builder.Services.Configure<AttendanceSettings>(builder.Configuration.GetSection("Attendance"));
+
+// Licenses
+QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 
 // Add identity services
 builder.Services
@@ -85,6 +92,8 @@ builder.Services.AddScoped<IAttendanceService, AttendanceService>();
 builder.Services.AddScoped< IEventStatusService, EventStatusService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
+builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<IReportExportService, ReportExportService>();
 
 // Add repositories
 builder.Services.AddScoped<IMemberRepository, MemberRepository>();
@@ -93,6 +102,7 @@ builder.Services.AddScoped<IEventScheduleRepository, EventScheduleRepository>();
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 builder.Services.AddScoped<IAttendanceQrSessionRepository, AttendanceQrSessionRepository>();
 builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
+builder.Services.AddScoped<IReportRepository, ReportRepository>();
 
 // Add DbContext
 builder.Services.AddDbContext<CAMSDBContext>(options =>
@@ -135,10 +145,30 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-	app.UseExceptionHandler("/Home/Error");
+	app.UseExceptionHandler("/error");
 	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 	app.UseHsts();
 }
+else 
+{
+	app.UseDeveloperExceptionPage();
+}
+
+app.Map("/error", (HttpContext context) =>
+{
+	var exceptionFeature =
+		context.Features.Get<IExceptionHandlerPathFeature>();
+
+	var exception = exceptionFeature?.Error;
+
+	return Results.Problem(
+		title: "An unexpected error occurred.",
+		
+		// UPDATE THIS BEFORE GOING LIVE
+		//detail: exception?.Message,
+		detail: exception?.ToString(),
+		statusCode: StatusCodes.Status500InternalServerError);
+});
 
 app.UseHttpsRedirection();
 app.UseRouting();

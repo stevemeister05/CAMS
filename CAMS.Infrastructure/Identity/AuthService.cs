@@ -1,4 +1,6 @@
 ﻿using CAMS.Application.Common.Exceptions;
+using CAMS.Application.Registration;
+using CAMS.Domain.Enums;
 using CAMS.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 
@@ -8,13 +10,16 @@ public sealed class AuthService : IAuthService
 {
 	private readonly UserManager<ApplicationUser> _userManager;
 	private readonly SignInManager<ApplicationUser> _signInManager;
+	private readonly IRegistrationRequestRepository _registrationRequestRepository;
 
 	public AuthService(
 		UserManager<ApplicationUser> userManager,
-		SignInManager<ApplicationUser> signInManager)
+		SignInManager<ApplicationUser> signInManager,
+		IRegistrationRequestRepository registrationRequestRepository)
 	{
 		_userManager = userManager;
 		_signInManager = signInManager;
+		_registrationRequestRepository = registrationRequestRepository;
 	}
 
 	public async Task<LoginResult> LoginAsync(
@@ -32,7 +37,26 @@ public sealed class AuthService : IAuthService
 
 		if (user is null)
 		{
-			return LoginResult.Deactivated();
+			var registrationRequest = await _registrationRequestRepository
+				.GetByMobileNumberAsync(
+					request.UserName,
+					cancellationToken);
+
+			if (registrationRequest != null)
+			{
+				if (registrationRequest.Status == RegistrationStatus.Pending)
+				{
+					return LoginResult.PendingApproval();
+				}
+
+
+				if (registrationRequest.Status == RegistrationStatus.Rejected)
+				{
+					return LoginResult.RegistrationRejected();
+				}
+			}
+
+			return LoginResult.InvalidCredentials();
 		}
 
 		var result = await _signInManager.PasswordSignInAsync(
@@ -43,9 +67,7 @@ public sealed class AuthService : IAuthService
 
 		if (!user.IsActive)
 		{
-			throw new UnauthorizedException(
-				"This user account has been disabled.",
-				"USER_DISABLED");
+			return LoginResult.Deactivated();
 		}
 
 		if (result.Succeeded)

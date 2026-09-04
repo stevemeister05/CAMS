@@ -50,6 +50,20 @@ public sealed class LoginResult
 			message ??
 				"Invalid username or password.");
 
+	public static LoginResult PendingApproval(
+		string? message = null)
+		=> new(
+			LoginResultStatus.PendingApproval,
+			message ??
+				"Your registration is still pending approval.");
+
+	public static LoginResult RegistrationRejected(
+		string? message = null)
+		=> new(
+			LoginResultStatus.RegistrationRejected,
+			message ??
+				"Your registration request was not approved.");
+
 	public static LoginResult Deactivated(
 		string? message = null)
 		=> new(

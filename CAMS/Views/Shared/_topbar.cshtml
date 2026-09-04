@@ -5,26 +5,22 @@
 		User.Identity?.Name ??
 		"User";
 
-	var roleName =
-		"User";
+	var roleName = "User";
 
 	if (User.IsInRole(
 		ApplicationRoles.Administrator))
 	{
-		roleName =
-			"Administrator";
+		roleName = "Administrator";
 	}
 	else if (User.IsInRole(
 		ApplicationRoles.AttendanceStaff))
 	{
-		roleName =
-			"Attendance Staff";
+		roleName = "Attendance Staff";
 	}
 	else if (User.IsInRole(
 		ApplicationRoles.Member))
 	{
-		roleName =
-			"Member";
+		roleName = "Member";
 	}
 
 	var initials =
@@ -37,7 +33,7 @@
 			: "U";
 }
 
-<header id="page-topbar">
+<header id="@(User.IsInRole(ApplicationRoles.Member) ? "" : "page-topbar")">
 
 	<div class="layout-width">
 
@@ -67,7 +63,7 @@
 				<div class="d-none d-md-flex align-items-center ms-2">
 
 					<span class="fw-semibold fs-5">
-						Admin Portal
+						Church Attendance Management System
 					</span>
 
 				</div>

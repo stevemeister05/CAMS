@@ -780,16 +780,22 @@
 
 				<td>
 
-					${formatAttendanceTime(
-					attendance.timeIn)}
+					${camsUtils.formatTime(
+						attendance.timeIn,
+						{
+							assumeUtc: true
+						})}
 
 				</td>
 
 				<td>
 
 					${attendance.timeOut
-				? formatAttendanceTime(
-					attendance.timeOut)
+					? camsUtils.formatTime(
+						attendance.timeOut,
+						{
+							assumeUtc: true
+						})
 				: `
 							<span class="text-muted">
 								—
