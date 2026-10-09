@@ -1,0 +1,19 @@
+{
+  "folders": [
+    {
+      "name": "Areas",
+      "path": "CAMS/Areas"
+    },
+    {
+      "name": "wwwroot",
+      "path": "CAMS/wwwroot"
+    },
+    {
+      "name": "Views",
+      "path": "CAMS/Views"
+    }
+  ],
+  "settings": {
+    "dotnet.defaultSolution": "CAMS.sln"
+  }
+}

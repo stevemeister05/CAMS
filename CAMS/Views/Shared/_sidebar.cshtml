@@ -1,0 +1,472 @@
+﻿@using CAMS.Domain.Constants
+
+@{
+	var currentArea =
+		ViewContext.RouteData.Values["area"]?.ToString();
+
+	var currentController =
+		ViewContext.RouteData.Values["controller"]?.ToString();
+
+	var currentAction =
+		ViewContext.RouteData.Values["action"]?.ToString();
+
+	var isAdmin =
+		string.Equals(
+			currentArea,
+			"Admin",
+			StringComparison.OrdinalIgnoreCase);
+
+	var isDashboard =
+		isAdmin &&
+		string.Equals(
+			currentController,
+			"Home",
+			StringComparison.OrdinalIgnoreCase);
+
+	var isEvents =
+		isAdmin &&
+		string.Equals(
+			currentController,
+			"Event",
+			StringComparison.OrdinalIgnoreCase);
+
+	var isMembers =
+		isAdmin &&
+		string.Equals(
+			currentController,
+			"Member",
+			StringComparison.OrdinalIgnoreCase);
+
+	var isRegistrations =
+		isAdmin &&
+		string.Equals(
+			currentController,
+			"Registration",
+			StringComparison.OrdinalIgnoreCase);
+
+	var isEventSchedules =
+		isAdmin &&
+		string.Equals(
+			currentController,
+			"EventSchedule",
+			StringComparison.OrdinalIgnoreCase);
+
+	var isUsers =
+		isAdmin &&
+		string.Equals(
+			currentController,
+			"User",
+			StringComparison.OrdinalIgnoreCase);
+
+	var isReports =
+		isAdmin &&
+		string.Equals(
+			currentController,
+			"Report",
+			StringComparison.OrdinalIgnoreCase);
+
+	var isMemberAttendanceReport =
+		isReports &&
+		string.Equals(
+			currentAction,
+			"MemberAttendance",
+			StringComparison.OrdinalIgnoreCase);
+
+	var isMemberAttendanceCountReport =
+		isReports &&
+		string.Equals(
+			currentAction,
+			"MemberAttendanceCount",
+			StringComparison.OrdinalIgnoreCase);
+
+	var isEventAttendanceSummaryReport =
+		isReports &&
+		string.Equals(
+			currentAction,
+			"EventAttendanceSummary",
+			StringComparison.OrdinalIgnoreCase);
+
+	var isIndividualEventAttendanceReport =
+		isReports &&
+		string.Equals(
+			currentAction,
+			"IndividualEventAttendance",
+			StringComparison.OrdinalIgnoreCase);
+}
+
+<!-- ========== App Menu ========== -->
+<div class="app-menu navbar-menu">
+
+	<!-- Logo -->
+	<div class="navbar-brand-box">
+
+		<a asp-area="Admin"
+		   asp-controller="Home"
+		   asp-action="Index"
+		   class="logo logo-dark">
+
+			<span class="logo-sm">
+				<i class="ri-community-line fs-2 text-primary"></i>
+			</span>
+
+			<span class="logo-lg">
+				<span class="fw-bold fs-5">
+					Sta. Barbara Chapel
+				</span>
+			</span>
+
+		</a>
+
+		<a asp-area="Admin"
+		   asp-controller="Home"
+		   asp-action="Index"
+		   class="logo logo-light">
+
+			<span class="logo-sm">
+				<i class="ri-community-line fs-2 text-white"></i>
+			</span>
+
+			<span class="logo-lg">
+				<span class="fw-bold fs-5 text-white">
+					Sta. Barbara Chapel
+				</span>
+			</span>
+
+		</a>
+
+		<button type="button"
+				class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover"
+				id="vertical-hover">
+
+			<i class="ri-record-circle-line"></i>
+
+		</button>
+
+	</div>
+
+
+	<div id="scrollbar">
+
+		<div class="container-fluid">
+
+			<div id="two-column-menu">
+			</div>
+
+
+			<ul class="navbar-nav"
+				id="navbar-nav">
+
+				<!-- =====================================================
+					 ADMIN PORTAL
+				===================================================== -->
+
+				<li class="menu-title">
+
+					<span>
+						Admin Portal
+					</span>
+
+				</li>
+
+
+				<!-- Dashboard -->
+				<li class="nav-item">
+
+					<a asp-area="Admin"
+					   asp-controller="Home"
+					   asp-action="Index"
+					   class="nav-link @(isDashboard ? "active" : "")">
+
+						<i class="ri-dashboard-2-line"></i>
+
+						<span>
+							Dashboard
+						</span>
+
+					</a>
+
+				</li>
+
+
+				<!-- =====================================================
+					 MANAGEMENT
+				===================================================== -->
+
+				<li class="menu-title">
+
+					<span>
+						Management
+					</span>
+
+				</li>
+
+
+				<!-- Events -->
+				<li class="nav-item">
+
+					<a asp-area="Admin"
+					   asp-controller="Event"
+					   asp-action="Index"
+					   class="nav-link @(isEvents ? "active" : "")">
+
+						<i class="ri-calendar-event-line"></i>
+
+						<span>
+							Events
+						</span>
+
+					</a>
+
+				</li>
+
+				<!-- Event Schedules -->
+				@if (User.IsInRole(ApplicationRoles.Administrator))
+				{
+					<li class="nav-item">
+
+						<a asp-area="Admin"
+						   asp-controller="EventSchedule"
+						   asp-action="Index"
+						   class="nav-link @(isEventSchedules ? "active" : "")">
+
+							<i class="ri-calendar-schedule-line"></i>
+
+							<span>
+								Event Schedules
+							</span>
+
+						</a>
+
+					</li>
+				}
+
+
+				<!-- Members -->
+				@if (User.IsInRole(ApplicationRoles.Administrator))
+				{
+					<li class="nav-item">
+
+						<a asp-area="Admin"
+						   asp-controller="Member"
+						   asp-action="Index"
+						   class="nav-link @(isMembers ? "active" : "")">
+
+							<i class="ri-group-line"></i>
+
+							<span>
+								Members
+							</span>
+
+						</a>
+
+					</li>
+				}
+
+				<!-- Members -->
+				@if (User.IsInRole(ApplicationRoles.Administrator))
+				{
+					<li class="nav-item">
+
+						<a asp-area="Admin"
+						   asp-controller="Registration"
+						   asp-action="Index"
+						   class="nav-link @(isRegistrations ? "active" : "")">
+
+							<i class="ri-user-add-line"></i>
+
+							<span>
+								Registration Requests
+							</span>
+
+						</a>
+
+					</li>
+				}
+
+				<!-- Users -->
+				@if (User.IsInRole(ApplicationRoles.Administrator))
+				{
+					<li class="nav-item">
+
+						<a asp-area="Admin"
+						   asp-controller="User"
+						   asp-action="Index"
+						   class="nav-link @(isUsers ? "active" : "")">
+
+							<i class="ri-user-settings-line"></i>
+
+							<span>
+								Users
+							</span>
+
+						</a>
+
+					</li>
+				}
+
+				<!-- =====================================================
+	 REPORTING
+===================================================== -->
+				@if (User.IsInRole(ApplicationRoles.Administrator))
+				{
+					<li class="menu-title">
+
+						<span>
+							Reporting
+						</span>
+
+					</li>
+
+
+					<li class="nav-item">
+
+						<a class="nav-link menu-link @(isReports ? "active" : "")"
+						   href="#sidebarReports"
+						   data-bs-toggle="collapse"
+						   role="button"
+						   aria-expanded="@(isReports ? "true" : "false")"
+						   aria-controls="sidebarReports">
+
+							<i class="ri-file-chart-line"></i>
+
+							<span>
+								Reports
+							</span>
+
+						</a>
+
+
+						<div class="collapse menu-dropdown @(isReports ? "show" : "")"
+							 id="sidebarReports">
+
+							<ul class="nav nav-sm flex-column">
+
+
+								<li class="nav-item">
+
+									<a asp-area="Admin"
+									   asp-controller="Report"
+									   asp-action="MemberAttendance"
+									   class="nav-link @(isMemberAttendanceReport ? "active" : "")">
+
+										Member Attendance
+
+									</a>
+
+								</li>
+
+
+								<li class="nav-item">
+
+									<a asp-area="Admin"
+									   asp-controller="Report"
+									   asp-action="MemberAttendanceCount"
+									   class="nav-link @(isMemberAttendanceCountReport ? "active" : "")">
+
+										Member Attendance Count
+
+									</a>
+
+								</li>
+
+
+								<li class="nav-item">
+
+									<a asp-area="Admin"
+									   asp-controller="Report"
+									   asp-action="EventAttendanceSummary"
+									   class="nav-link @(isEventAttendanceSummaryReport ? "active" : "")">
+
+										Event Attendance Summary
+
+									</a>
+
+								</li>
+
+
+								<li class="nav-item">
+
+									<a asp-area="Admin"
+									   asp-controller="Report"
+									   asp-action="IndividualEventAttendance"
+									   class="nav-link @(isIndividualEventAttendanceReport ? "active" : "")">
+
+										Individual Event Attendance
+
+									</a>
+
+								</li>
+
+							</ul>
+
+						</div>
+
+					</li>
+				}
+
+
+				<!-- =====================================================
+					 ACCOUNT
+				===================================================== -->
+
+				<li class="menu-title">
+
+					<span>
+						Account
+					</span>
+
+				</li>
+
+
+				<!-- Change Password -->
+				<li class="nav-item">
+
+					<a asp-area=""
+					   asp-controller="Auth"
+					   asp-action="ChangePassword"
+					   class="nav-link">
+
+						<i class="ri-lock-password-line"></i>
+
+						<span>
+							Change Password
+						</span>
+
+					</a>
+
+				</li>
+
+
+				<!-- Logout -->
+				<li class="nav-item">
+
+					<a href="javascript:void(0);"
+					   id="sidebar-logout"
+					   class="nav-link">
+
+						<i class="ri-logout-box-r-line"></i>
+
+						<span>
+							Logout
+						</span>
+
+					</a>
+
+				</li>
+
+			</ul>
+
+		</div>
+
+	</div>
+
+
+	<div class="sidebar-background">
+	</div>
+
+</div>
+
+<!-- Left Sidebar End -->
+<!-- Vertical Overlay -->
+<div class="vertical-overlay">
+</div>

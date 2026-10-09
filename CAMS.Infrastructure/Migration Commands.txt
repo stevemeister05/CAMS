@@ -1,0 +1,23 @@
+﻿// Add Migration
+Add-Migration InitialCreate -Context CAMSDbContext -Project CAMS.Infrastructure -StartupProject CAMS.Web
+
+// Update Database
+Update-Database -Context CAMSDbContext -Project CAMS.Infrastructure -StartupProject CAMS.Web
+
+
+//Rollback to previous migration
+Remove-Migration -Context CAMSDbContext -Project CAMS.Infrastructure -StartupProject CAMS.Web
+
+//Rollback to specicific migration
+Update-Database AddMemberPortal -Context CAMSDbContext -Project CAMS.Infrastructure -StartupProject CAMS.Web
+
+// Rollback prior to the first migration
+Update-Database 0 -Context CAMSDbContext -Project CAMS.Infrastructure -StartupProject CAMS.Web
+
+
+
+
+
+
+
+Add-Migration ActivateExistingUsers -Context CAMSDbContext -Project CAMS.Infrastructure -StartupProject CAMS.Web

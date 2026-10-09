@@ -1,0 +1,45 @@
+﻿<!doctype html>
+<html lang="en" data-layout="vertical" data-sidebar="dark" data-sidebar-size="lg" data-preloader="disable" data-theme="default" data-topbar="light" data-bs-theme="light" data-layout-width="fluid" data-sidebar-image="none" data-layout-position="fixed" data-layout-style="default">
+
+<head>
+
+    @Html.Partial("~/Views/Shared/_title_meta.cshtml")
+    @RenderSection("styles", false)
+    @Html.Partial("~/Views/Shared/_head_css.cshtml")
+</head>
+
+<body data-sidebar="dark">
+
+    <!-- Begin page -->
+    <div id="layout-wrapper">
+        @Html.Partial("~/Views/Shared/_topbar.cshtml")
+
+        <div class="">
+            <div class="page-content">
+                <div class="container-fluid">
+                    @Html.Partial("~/Views/Shared/_page_title.cshtml")
+
+                    @RenderBody()
+
+                    @* @Html.Partial("~/Views/Shared/_customizerLayout.cshtml") *@
+                </div> <!-- container-fluid -->
+            </div>
+            <!-- End Page-content -->
+            @Html.Partial("~/Views/Shared/_footer.cshtml")
+        </div>
+    </div> <!-- container-fluid -->
+    <script src="~/assets/libs/bootstrap/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
+    <script src="~/assets/libs/simplebar/simplebar.min.js" asp-append-version="true"></script>
+    <script src="~/assets/js/plugins.js" asp-append-version="true"></script>
+    <script src="~/assets/js/app.js" asp-append-version="true"></script>
+    <script src="~/js/cams-utils.js" asp-append-version="true"></script>
+    <script src="~/js/cams-ui.js" asp-append-version="true"></script>
+    <script src="~/js/cams-form.js" asp-append-version="true"></script>
+    <script src="~/js/cams-api.js" asp-append-version="true"></script>
+    <script src="~/js/admin-layout.js" asp-append-version="true"></script>
+
+    @RenderSection("scripts", required: false)
+
+</body>
+
+</html>

@@ -1,3 +1,13 @@
 <Solution>
-  <Project Path="CAMS/CAMS.csproj" />
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="CAMS.Application/CAMS.Application.csproj" />
+  <Project Path="CAMS.Domain/CAMS.Domain.csproj" />
+  <Project Path="CAMS.Infrastructure/CAMS.Infrastructure.csproj" />
+  <Project Path="CAMS.Winforms/CAMS.Winforms.csproj" Id="8831a473-c8f6-40a2-b52a-add02dfaf7d4">
+    <Platform Solution="*|x64" Project="x64" />
+  </Project>
+  <Project Path="CAMS/CAMS.Web.csproj" />
 </Solution>

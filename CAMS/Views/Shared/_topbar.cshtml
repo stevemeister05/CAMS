@@ -1,0 +1,269 @@
+﻿@using CAMS.Domain.Constants
+
+@{
+	var userName =
+		User.Identity?.Name ??
+		"User";
+
+	var roleName = "User";
+
+	if (User.IsInRole(
+		ApplicationRoles.Administrator))
+	{
+		roleName = "Administrator";
+	}
+	else if (User.IsInRole(
+		ApplicationRoles.AttendanceStaff))
+	{
+		roleName = "Attendance Staff";
+	}
+	else if (User.IsInRole(
+		ApplicationRoles.Member))
+	{
+		roleName = "Member";
+	}
+
+	var initials =
+		!string.IsNullOrWhiteSpace(
+			userName)
+			? userName
+				.Trim()
+				.Substring(0, 1)
+				.ToUpperInvariant()
+			: "U";
+}
+
+<header id="@(User.IsInRole(ApplicationRoles.Member) ? "" : "page-topbar")">
+
+	<div class="layout-width">
+
+		<div class="navbar-header">
+
+			<!-- =====================================================
+				 LEFT SIDE
+			===================================================== -->
+
+			<div class="d-flex align-items-center">
+
+				<!-- Mobile / Sidebar Toggle -->
+				<button type="button"
+						class="btn btn-sm px-3 fs-16 header-item vertical-menu-btn topnav-hamburger shadow-none"
+						id="topnav-hamburger-icon">
+
+					<span class="hamburger-icon">
+						<span></span>
+						<span></span>
+						<span></span>
+					</span>
+
+				</button>
+
+
+				<!-- Admin Portal Label -->
+				<div class="d-none d-md-flex align-items-center ms-2">
+
+					<span class="fw-semibold fs-5">
+						Church Attendance Management System
+					</span>
+
+				</div>
+
+			</div>
+
+
+			<!-- =====================================================
+				 RIGHT SIDE
+			===================================================== -->
+
+			<div class="d-flex align-items-center">
+
+
+				<!-- =================================================
+					 FULLSCREEN
+				================================================= -->
+
+				<div class="ms-1 header-item d-none d-sm-flex">
+
+					<button type="button"
+							class="btn btn-icon btn-topbar btn-ghost-dark rounded-circle"
+							data-toggle="fullscreen"
+							title="Fullscreen">
+
+						<i class="bi bi-arrows-fullscreen fs-lg"></i>
+
+					</button>
+
+				</div>
+
+
+				<!-- =================================================
+					 THEME
+				================================================= -->
+
+				<div class="dropdown topbar-head-dropdown ms-1 header-item">
+
+					<button type="button"
+							class="btn btn-icon btn-topbar btn-ghost-dark rounded-circle mode-layout"
+							data-bs-toggle="dropdown"
+							aria-haspopup="true"
+							aria-expanded="false"
+							title="Theme">
+
+						<i class="bi bi-sun align-middle fs-3xl"></i>
+
+					</button>
+
+
+					<div class="dropdown-menu p-2 dropdown-menu-end"
+						 id="light-dark-mode">
+
+						<a href="javascript:void(0);"
+						   class="dropdown-item"
+						   data-mode="light">
+
+							<i class="bi bi-sun align-middle me-2"></i>
+
+							Light
+
+						</a>
+
+
+						<a href="javascript:void(0);"
+						   class="dropdown-item"
+						   data-mode="dark">
+
+							<i class="bi bi-moon align-middle me-2"></i>
+
+							Dark
+
+						</a>
+
+
+						<a href="javascript:void(0);"
+						   class="dropdown-item"
+						   data-mode="auto">
+
+							<i class="bi bi-moon-stars align-middle me-2"></i>
+
+							System Default
+
+						</a>
+
+					</div>
+
+				</div>
+
+
+				<!-- =================================================
+					 USER
+				================================================= -->
+
+				<div class="dropdown ms-sm-3 header-item topbar-user">
+
+					<button type="button"
+							class="btn shadow-none"
+							id="page-header-user-dropdown"
+							data-bs-toggle="dropdown"
+							data-bs-auto-close="true"
+							aria-expanded="false">
+
+						<span class="d-flex align-items-center">
+
+							<span class="rounded-circle header-profile-user
+								d-flex align-items-center
+								justify-content-center
+								bg-primary-subtle text-primary
+								fw-semibold">
+
+								@initials
+
+							</span>
+
+							<span class="text-start ms-xl-2">
+
+								<span class="d-none d-xl-inline-block
+									ms-1 fw-medium user-name-text">
+
+									@userName
+
+								</span>
+
+								<span class="d-none d-xl-block
+									ms-1 fs-sm user-name-sub-text">
+
+									@roleName
+
+								</span>
+
+							</span>
+
+						</span>
+
+					</button>
+
+					<div class="dropdown-menu dropdown-menu-end"
+						 aria-labelledby="page-header-user-dropdown">
+
+						<h6 class="dropdown-header">
+							Signed in as @userName
+						</h6>
+
+						<div class="dropdown-divider"></div>
+
+						<a asp-area="Admin"
+						   asp-controller="Home"
+						   asp-action="Index"
+						   class="dropdown-item">
+
+							<i class="ri-dashboard-line
+							text-muted fs-lg
+							align-middle me-2"></i>
+
+							<span class="align-middle">
+								Dashboard
+							</span>
+
+						</a>
+
+						<a asp-area=""
+						   asp-controller="Auth"
+						   asp-action="ChangePassword"
+						   class="dropdown-item">
+
+							<i class="ri-lock-password-line
+							text-muted fs-lg
+							align-middle me-2"></i>
+
+							<span class="align-middle">
+								Change Password
+							</span>
+
+						</a>
+
+						<div class="dropdown-divider"></div>
+
+						<button type="button"
+								id="topbar-logout"
+								class="dropdown-item">
+
+							<i class="ri-logout-box-r-line
+							text-muted fs-lg
+							align-middle me-2"></i>
+
+							<span class="align-middle">
+								Logout
+							</span>
+
+						</button>
+
+					</div>
+
+				</div>
+
+			</div>
+
+		</div>
+
+	</div>
+
+</header>

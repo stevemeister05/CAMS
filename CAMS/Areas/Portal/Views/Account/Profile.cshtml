@@ -1,0 +1,230 @@
+﻿@{
+	ViewData["Title"] =
+		"My Profile";
+
+	Layout =
+		"/Areas/Portal/Views/Shared/_Layout.cshtml";
+}
+
+
+<div id="portal-profile-page">
+
+	<div class="row justify-content-center">
+
+		<div class="col-xl-8 col-lg-9">
+
+
+			<div class="d-flex
+				align-items-center
+				justify-content-between
+				flex-wrap
+				gap-2
+				mb-4">
+
+				<div>
+
+					<h4 class="mb-1">
+						My Profile
+					</h4>
+
+					<p class="text-muted mb-0">
+						View your information registered
+						with Sta. Barbara Chapel.
+					</p>
+
+				</div>
+
+
+				<a asp-area="Portal"
+				   asp-controller="Home"
+				   asp-action="Index"
+				   class="btn btn-light">
+
+					<i class="ri-arrow-left-line
+						align-middle me-1">
+					</i>
+
+					Back to Portal
+
+				</a>
+
+			</div>
+
+
+			<div id="portal-profile-alert">
+			</div>
+
+
+			<div class="card">
+
+				<div class="card-body p-4">
+
+
+					<div class="d-flex
+						align-items-center
+						gap-3
+						mb-4">
+
+
+						<div class="avatar-lg
+							flex-shrink-0">
+
+							<div id="profile-avatar"
+								 class="avatar-title
+								bg-primary-subtle
+								text-primary
+								rounded-circle
+								fs-3
+								fw-semibold">
+
+								<i class="ri-user-line">
+								</i>
+
+							</div>
+
+						</div>
+
+
+						<div class="flex-grow-1">
+
+							<h4 id="profile-name"
+								class="mb-1">
+
+								Loading...
+
+							</h4>
+
+
+							<p class="text-muted mb-0">
+								Sta. Barbara Chapel Member
+							</p>
+
+						</div>
+
+					</div>
+
+
+					<hr class="my-4" />
+
+
+					<div class="row g-4">
+
+
+						<div class="col-md-6">
+
+							<label class="form-label text-muted">
+								First Name
+							</label>
+
+							<div id="profile-first-name"
+								 class="fw-medium">
+								—
+							</div>
+
+						</div>
+
+
+						<div class="col-md-6">
+
+							<label class="form-label text-muted">
+								Middle Name
+							</label>
+
+							<div id="profile-middle-name"
+								 class="fw-medium">
+								—
+							</div>
+
+						</div>
+
+
+						<div class="col-md-6">
+
+							<label class="form-label text-muted">
+								Last Name
+							</label>
+
+							<div id="profile-last-name"
+								 class="fw-medium">
+								—
+							</div>
+
+						</div>
+
+
+						<div class="col-md-6">
+
+							<label class="form-label text-muted">
+								Mobile Number
+							</label>
+
+							<div id="profile-mobile-number"
+								 class="fw-medium">
+								—
+							</div>
+
+						</div>
+
+
+						<div class="col-md-6">
+
+							<label class="form-label text-muted">
+								Birth Date
+							</label>
+
+							<div id="profile-birth-date"
+								 class="fw-medium">
+								—
+							</div>
+
+						</div>
+
+
+						<div class="col-md-6">
+
+							<label class="form-label text-muted">
+								Gender
+							</label>
+
+							<div id="profile-gender"
+								 class="fw-medium">
+								—
+							</div>
+
+						</div>
+
+
+						<div class="col-12">
+
+							<label class="form-label text-muted">
+								Address
+							</label>
+
+							<div id="profile-address"
+								 class="fw-medium">
+								—
+							</div>
+
+						</div>
+
+
+					</div>
+
+				</div>
+
+			</div>
+
+		</div>
+
+	</div>
+
+</div>
+
+
+@section scripts {
+
+	<script src="~/js/pages/portal/profile.js"
+			asp-append-version="true">
+	</script>
+
+}

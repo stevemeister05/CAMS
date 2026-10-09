@@ -1,8 +1,296 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+	ViewData["Title"] =
+		"Sta. Barbara Chapel";
+
+	Layout =
+		"/Views/Shared/_BlankLayout2.cshtml";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+<style>
+
+	.landing-page {
+		min-height: calc(100vh - 70px);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 40px 20px;
+		background: linear-gradient( 135deg, rgba(64, 81, 137, 0.08), rgba(64, 81, 137, 0.02));
+	}
+
+
+	.landing-card {
+		width: 100%;
+		max-width: 760px;
+		border: 0;
+		border-radius: 20px;
+		box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+	}
+
+
+	.landing-icon {
+		width: 88px;
+		height: 88px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin: 0 auto;
+		border-radius: 50%;
+		background: var(--tb-primary-bg-subtle);
+		color: var(--tb-primary);
+		font-size: 42px;
+	}
+
+
+	.landing-action {
+		height: 100%;
+		padding: 28px;
+		border: 1px solid var(--tb-border-color);
+		border-radius: 16px;
+		transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+		display: flex;
+		flex-direction: column;
+	}
+
+
+		.landing-action:hover {
+			transform: translateY(-3px);
+			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+			border-color: var(--tb-primary);
+		}
+
+
+	.landing-action-icon {
+		width: 52px;
+		height: 52px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 12px;
+		font-size: 26px;
+	}
+
+
+	.landing-action-button {
+		margin-top: auto;
+	}
+
+</style>
+
+
+<div class="landing-page">
+
+	<div class="card landing-card">
+
+		<div class="card-body
+			p-4
+			p-md-5">
+
+
+			<!-- Chapel -->
+
+			<div class="text-center mb-5">
+
+				<div class="landing-icon mb-4">
+
+					<i class="ri-community-line">
+					</i>
+
+				</div>
+
+
+				<h2 class="fw-bold mb-2">
+
+					Sta. Barbara Chapel
+
+				</h2>
+
+
+				<p class="text-muted
+					fs-15
+					mb-0">
+
+					Church Attendance
+					Management System
+
+				</p>
+
+			</div>
+
+
+			<!-- Question -->
+
+			<div class="text-center mb-4">
+
+				<h4 class="mb-2">
+
+					Are you a member
+					of Sta. Barbara Chapel?
+
+				</h4>
+
+
+				<p class="text-muted mb-0">
+
+					Register an account to access
+					the chapel member portal
+					and attendance services.
+
+				</p>
+
+			</div>
+
+
+			<div class="row g-3">
+
+
+				<!-- Register -->
+
+				<div class="col-md-6">
+
+					<div class="landing-action">
+
+						<div class="landing-action-icon
+							bg-primary-subtle
+							text-primary
+							mb-3">
+
+							<i class="ri-user-add-line">
+							</i>
+
+						</div>
+
+
+						<h5 class="mb-2">
+
+							I'm a Chapel Member
+
+						</h5>
+
+
+						<p class="text-muted
+							mb-4">
+
+							If you are a member
+							but don't have an account yet,
+							create one here.
+
+						</p>
+
+
+						<div class="landing-action-button">
+
+							<a href="/portal/register"
+							   class="btn
+								btn-primary
+								w-100">
+
+								<i class="ri-user-add-line
+									align-middle
+									me-1">
+								</i>
+
+								Register
+
+							</a>
+
+						</div>
+
+					</div>
+
+				</div>
+
+
+				<!-- Login -->
+
+				<div class="col-md-6">
+
+					<div class="landing-action">
+
+						<div class="landing-action-icon
+							bg-success-subtle
+							text-success
+							mb-3">
+
+							<i class="ri-login-box-line">
+							</i>
+
+						</div>
+
+
+						<h5 class="mb-2">
+
+							I Already Have an Account
+
+						</h5>
+
+
+						<p class="text-muted
+							mb-2">
+
+							Already registered?
+							Sign in to access
+							your chapel account.
+
+						</p>
+
+
+						<p class="text-muted
+							fs-12
+							mb-4">
+
+							Administrators and attendance staff
+							can also use this login page
+							to access the admin portal.
+
+						</p>
+
+
+						<div class="landing-action-button">
+
+							<a href="/auth/login"
+							   class="btn
+								btn-success
+								w-100">
+
+								<i class="ri-login-box-line
+									align-middle
+									me-1">
+								</i>
+
+								Log In
+
+							</a>
+
+						</div>
+
+					</div>
+
+				</div>
+
+
+			</div>
+
+
+			<div class="text-center
+				mt-4
+				pt-3
+				border-top">
+
+				<p class="text-muted
+					fs-12
+					mb-0">
+
+					CAMS
+					&copy; @DateTime.Now.Year
+
+				</p>
+
+			</div>
+
+
+		</div>
+
+	</div>
+
 </div>

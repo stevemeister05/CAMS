@@ -1,0 +1,34 @@
+﻿ChurchAttendance.sln
+│
+├── ChurchAttendance.Web
+│   └── ASP.NET Core MVC
+│
+├── ChurchAttendance.WinForms
+│   └── Attendance/Admin Client
+│
+├── ChurchAttendance.Domain
+│   ├── Entities
+│   │   ├── Member.cs
+│   │   ├── Event.cs
+│   │   ├── EventSchedule.cs
+│   │   ├── Attendance.cs
+│   │   ├── RegistrationRequest.cs
+│   │   ├── OtpVerification.cs
+│   │   └── SystemSetting.cs
+│   │
+│   └── Enums
+│
+├── ChurchAttendance.Application
+│   ├── Services
+│   ├── DTOs
+│   └── Interfaces
+│
+└── ChurchAttendance.Infrastructure
+    ├── Data
+    │   ├── ChurchAttendanceDbContext.cs
+    │   └── Configurations
+    │
+    ├── Identity
+    │   └── ApplicationUser.cs
+    │
+    └── Migrations

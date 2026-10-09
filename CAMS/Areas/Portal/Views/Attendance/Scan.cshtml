@@ -1,0 +1,183 @@
+﻿@{
+	ViewData["Title"] =
+		"Scan Attendance";
+
+	Layout =
+		"/Areas/Portal/Views/Shared/_Layout.cshtml";
+}
+
+
+<div id="portal-attendance-scan-page">
+
+	<div class="row justify-content-center">
+
+		<div class="col-xl-6
+			col-lg-7
+			col-md-9">
+
+
+			<div class="d-flex
+				align-items-center
+				justify-content-between
+				gap-2
+				mb-4">
+
+				<div>
+
+					<h4 class="mb-1">
+						Scan Attendance
+					</h4>
+
+					<p class="text-muted mb-0">
+						Scan the event QR code to record
+						your attendance.
+					</p>
+
+				</div>
+
+
+				<a asp-area="Portal"
+				   asp-controller="Home"
+				   asp-action="Index"
+				   class="btn btn-light flex-shrink-0">
+
+					<i class="ri-arrow-left-line
+						align-middle me-1">
+					</i>
+
+					Portal
+
+				</a>
+
+			</div>
+
+
+			<div id="attendance-scan-alert">
+			</div>
+
+
+			<div class="card">
+
+				<div class="card-body p-4">
+
+
+					<div class="text-center mb-4">
+
+						<div class="avatar-lg
+							mx-auto
+							mb-3">
+
+							<div class="avatar-title
+								bg-primary-subtle
+								text-primary
+								rounded-circle
+								fs-2">
+
+								<i class="ri-qr-scan-2-line">
+								</i>
+
+							</div>
+
+						</div>
+
+
+						<h5 class="mb-2">
+							Scan Event QR Code
+						</h5>
+
+
+						<p class="text-muted mb-0">
+							Point your camera at the QR code
+							displayed at the chapel.
+						</p>
+
+					</div>
+
+
+					<div id="qr-reader"
+						 class="rounded
+						overflow-hidden
+						border">
+					</div>
+
+
+					<div id="scanner-status"
+						 class="text-center
+						text-muted
+						mt-3">
+
+						Preparing camera...
+
+					</div>
+
+
+					<div class="d-grid mt-4">
+
+						<button type="button"
+								id="restart-scanner-button"
+								class="btn btn-primary d-none">
+
+							<i class="ri-camera-line
+								align-middle me-1">
+							</i>
+
+							Start Camera
+
+						</button>
+
+					</div>
+
+
+				</div>
+
+			</div>
+
+
+			<div class="alert alert-info mb-0">
+
+				<div class="d-flex gap-2">
+
+					<div>
+						<i class="ri-information-line fs-5">
+						</i>
+					</div>
+
+
+					<div>
+
+						<div class="fw-semibold mb-1">
+							Automatic attendance
+						</div>
+
+						<div class="small">
+							The QR code determines whether
+							you are recording a time-in or
+							time-out. You do not need to
+							select it manually.
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
+
+
+		</div>
+
+	</div>
+
+</div>
+
+
+@section scripts {
+
+	<script src="~/assets/libs/html5-qrcode/html5-qrcode.min.js"
+			asp-append-version="true">
+	</script>
+
+	<script src="~/js/pages/portal/attendance-scan.js"
+			asp-append-version="true">
+	</script>
+
+}

@@ -1,0 +1,264 @@
+﻿@{
+	ViewData["Title"] =
+		"Member Portal";
+
+	Layout =
+		"/Areas/Portal/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="row g-4">
+
+
+	<div class="col-12">
+
+		<div class="card border-0
+			bg-primary-subtle">
+
+			<div class="card-body p-4">
+
+				<div class="d-flex
+					flex-column
+					flex-md-row
+					align-items-md-center
+					justify-content-between
+					gap-3">
+
+
+					<div>
+
+						<span class="badge
+							bg-primary-subtle
+							text-primary
+							mb-2">
+
+							Member Portal
+
+						</span>
+
+
+						<h3 class="mb-2">
+							Welcome to Sta. Barbara Chapel
+						</h3>
+
+
+						<p class="text-muted mb-0">
+							Record your attendance, view your history,
+							and manage your member information.
+						</p>
+
+					</div>
+
+
+					<div class="avatar-lg
+						flex-shrink-0
+						d-none
+						d-md-block">
+
+						<div class="avatar-title
+							bg-primary
+							text-white
+							rounded-circle
+							fs-2">
+
+							<i class="ri-community-line">
+							</i>
+
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
+
+		</div>
+
+	</div>
+
+
+	<div class="col-12">
+
+		<div class="card border-primary">
+
+			<div class="card-body p-4">
+
+
+				<div class="d-flex
+					flex-column
+					flex-md-row
+					align-items-md-center
+					justify-content-between
+					gap-4">
+
+
+					<div class="d-flex
+						align-items-start
+						gap-3">
+
+
+						<div class="avatar-md
+							flex-shrink-0">
+
+							<div class="avatar-title
+								bg-primary
+								text-white
+								rounded-circle
+								fs-2">
+
+								<i class="ri-qr-scan-2-line">
+								</i>
+
+							</div>
+
+						</div>
+
+
+						<div>
+
+							<h4 class="mb-1">
+								Scan Attendance
+							</h4>
+
+
+							<p class="text-muted mb-0">
+								Scan the event QR code to record your
+								time-in or time-out.
+							</p>
+
+						</div>
+
+					</div>
+
+
+					<a asp-area="Portal"
+					   asp-controller="Attendance"
+					   asp-action="Scan"
+					   class="btn btn-primary btn-lg">
+
+						<i class="ri-qr-scan-2-line
+							align-middle me-1">
+						</i>
+
+						Scan QR Code
+
+					</a>
+
+				</div>
+
+			</div>
+
+		</div>
+
+	</div>
+
+
+	<div class="col-md-6">
+
+		<div class="card h-100">
+
+			<div class="card-body p-4">
+
+
+				<div class="avatar-md mb-3">
+
+					<div class="avatar-title
+						bg-success-subtle
+						text-success
+						rounded-circle
+						fs-3">
+
+						<i class="ri-history-line">
+						</i>
+
+					</div>
+
+				</div>
+
+
+				<h5>
+					Attendance History
+				</h5>
+
+
+				<p class="text-muted">
+					View your previous attendance records,
+					including your recorded time-in and time-out.
+				</p>
+
+
+				<a asp-area="Portal"
+				   asp-controller="Attendance"
+				   asp-action="History"
+				   class="btn btn-soft-success">
+
+					<i class="ri-history-line
+						align-middle me-1">
+					</i>
+
+					View History
+
+				</a>
+
+			</div>
+
+		</div>
+
+	</div>
+
+
+	<div class="col-md-6">
+
+		<div class="card h-100">
+
+			<div class="card-body p-4">
+
+
+				<div class="avatar-md mb-3">
+
+					<div class="avatar-title
+						bg-info-subtle
+						text-info
+						rounded-circle
+						fs-3">
+
+						<i class="ri-user-line">
+						</i>
+
+					</div>
+
+				</div>
+
+
+				<h5>
+					My Profile
+				</h5>
+
+
+				<p class="text-muted">
+					View and manage your personal information
+					registered with Sta. Barbara Chapel.
+				</p>
+
+
+				<a asp-area="Portal"
+				   asp-controller="Account"
+				   asp-action="Profile"
+				   class="btn btn-soft-info">
+
+					<i class="ri-user-line
+						align-middle me-1">
+					</i>
+
+					View Profile
+
+				</a>
+
+			</div>
+
+		</div>
+
+	</div>
+
+
+</div>

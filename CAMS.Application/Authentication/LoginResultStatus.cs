@@ -1,0 +1,21 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace CAMS.Application.Authentication;
+
+public enum LoginResultStatus
+{
+	Success,
+
+	InvalidCredentials,
+	Deactivated,
+
+	LockedOut,
+
+	NotAllowed,
+	PendingApproval,
+	RegistrationRejected,
+
+	RequiresTwoFactor
+}

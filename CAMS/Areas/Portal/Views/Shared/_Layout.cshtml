@@ -1,0 +1,311 @@
+﻿<!doctype html>
+
+<html lang="en"
+	  data-layout="vertical"
+	  data-preloader="disable"
+	  data-theme="default"
+	  data-topbar="light"
+	  data-bs-theme="light">
+
+<head>
+
+	@Html.Partial(
+		"~/Views/Shared/_title_meta.cshtml")
+
+
+	@RenderSection(
+		"styles",
+		required: false)
+
+
+	@Html.Partial(
+		"~/Views/Shared/_head_css.cshtml")
+
+</head>
+
+
+<body>
+
+	<div id="portal-wrapper">
+
+
+		<header class="border-bottom bg-white">
+
+			<div class="container-fluid">
+
+				<div class="d-flex
+					align-items-center
+					justify-content-between
+					py-3">
+
+
+					<a asp-area="Portal"
+					   asp-controller="Home"
+					   asp-action="Index"
+					   class="text-decoration-none">
+
+						<div class="d-flex
+							align-items-center
+							gap-2">
+
+							<div class="avatar-sm">
+
+								<div class="avatar-title
+									bg-primary-subtle
+									text-primary
+									rounded-circle">
+
+									<i class="ri-community-line
+										fs-4">
+									</i>
+
+								</div>
+
+							</div>
+
+
+							<div>
+
+								<h5 class="mb-0 text-body">
+									Sta. Barbara Chapel
+								</h5>
+
+								<small class="text-muted">
+									Member Portal
+								</small>
+
+							</div>
+
+						</div>
+
+					</a>
+
+
+					<div class="dropdown">
+
+						<button type="button"
+								class="btn btn-light
+							rounded-circle
+							p-0
+							avatar-sm"
+								data-bs-toggle="dropdown"
+								aria-expanded="false">
+
+							<span class="avatar-title
+								bg-light
+								text-body
+								rounded-circle">
+
+								<i class="ri-user-line
+									fs-5">
+								</i>
+
+							</span>
+
+						</button>
+
+
+						<div class="dropdown-menu
+							dropdown-menu-end">
+
+
+							<a asp-area="Portal"
+							   asp-controller="Account"
+							   asp-action="Profile"
+							   class="dropdown-item">
+
+								<i class="ri-user-line
+									align-middle
+									me-2">
+								</i>
+
+								My Profile
+
+							</a>
+
+
+							<div class="dropdown-divider">
+							</div>
+
+
+							<button type="button"
+									id="portal-logout-button"
+									class="dropdown-item text-danger">
+
+								<i class="ri-logout-box-r-line
+									align-middle
+									me-2">
+								</i>
+
+								Sign Out
+
+							</button>
+
+					</div>
+
+				</div>
+
+			</div>
+
+		</header>
+
+
+		<main>
+
+			<div class="container-fluid py-4">
+
+				@RenderBody()
+
+			</div>
+
+		</main>
+
+
+		<footer class="border-top bg-white">
+
+			<div class="container-fluid">
+
+				<div class="py-3
+					text-center
+					text-muted
+					small">
+
+					&copy; @DateTime.Now.Year
+					Sta. Barbara Chapel
+
+				</div>
+
+			</div>
+
+		</footer>
+
+
+	</div>
+
+
+	<script src="~/assets/libs/bootstrap/js/bootstrap.bundle.min.js"
+			asp-append-version="true">
+	</script>
+
+	<script src="~/assets/libs/simplebar/simplebar.min.js"
+			asp-append-version="true">
+	</script>
+
+	<script src="~/assets/js/plugins.js"
+			asp-append-version="true">
+	</script>
+
+	@* <script src="~/assets/js/app.js"
+			asp-append-version="true">
+	</script> *@
+
+
+	<script src="~/js/cams-utils.js"
+			asp-append-version="true">
+	</script>
+
+	<script src="~/js/cams-ui.js"
+			asp-append-version="true">
+	</script>
+
+	<script src="~/js/cams-form.js"
+			asp-append-version="true">
+	</script>
+
+	<script src="~/js/cams-api.js"
+			asp-append-version="true">
+	</script>
+
+	<script src="~/js/cams-table.js"
+			asp-append-version="true">
+	</script>
+		<script>
+				(() => {
+					"use strict";
+
+
+					const logoutButton =
+						document.getElementById(
+							"portal-logout-button");
+
+
+					if (!logoutButton) {
+						return;
+					}
+
+
+					logoutButton.addEventListener(
+						"click",
+						logout);
+
+
+					async function logout() {
+
+						camsUi.setButtonLoading(
+							logoutButton,
+							true,
+							"Signing Out...");
+
+
+						try {
+
+							const response =
+								await camsApi.post(
+									"/api/v1/auth/logout",
+									{});
+
+
+							if (!response) {
+								return;
+							}
+
+
+							const payload =
+								await camsApi.readJson(
+									response);
+
+
+							if (!response.ok) {
+
+								throw new Error(
+									camsApi.getErrorMessage(
+										payload,
+										response.status,
+										"Unable to sign out."));
+							}
+
+
+							window.location.href = "/";
+						}
+						catch (error) {
+
+							console.error(
+								"Unable to sign out.",
+								error);
+
+
+							await camsUi.showErrorBox(
+								error.message ??
+								"Unable to sign out.",
+								{
+									title:
+										"Sign Out Failed"
+								});
+						}
+						finally {
+
+							camsUi.setButtonLoading(
+								logoutButton,
+								false);
+						}
+					}
+
+				})();
+		</script>
+	@RenderSection(
+		"scripts",
+		required: false)
+
+</body>
+
+</html>
