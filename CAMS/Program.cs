@@ -8,6 +8,7 @@ using CAMS.Application.Common.Security;
 using CAMS.Application.Dashboard;
 using CAMS.Application.Event;
 using CAMS.Application.EventSchedule;
+using CAMS.Application.Fingerprint;
 using CAMS.Application.Member;
 using CAMS.Application.Registration;
 using CAMS.Application.Report;
@@ -17,6 +18,7 @@ using CAMS.Infrastructure.Common.Clocking;
 using CAMS.Infrastructure.Data;
 using CAMS.Infrastructure.Data.Repositories;
 using CAMS.Infrastructure.Data.Seeders;
+using CAMS.Infrastructure.Fingerprint;
 using CAMS.Infrastructure.Identity;
 using CAMS.Infrastructure.Reporting;
 using CAMS.Infrastructure.Repositories;
@@ -123,6 +125,7 @@ builder.Services.AddSignalR();
 builder.Services.AddScoped<IAttendanceNotifier, AttendanceNotifier>();
 builder.Services.AddSingleton<IAttendanceQrSubscriptionRegistry, AttendanceQrSubscriptionRegistry>();
 builder.Services.AddSingleton<IAttendanceWindowService, AttendanceWindowService>();
+builder.Services.AddScoped<IFingerprintTemplateProtector, FingerprintTemplateProtector>();
 
 builder.Services.AddCamsRateLimiting();
 

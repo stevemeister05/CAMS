@@ -36,4 +36,9 @@ public interface IMemberService
 	Task<MemberResponse> DeactivateAsync(
 		Guid id,
 		CancellationToken cancellationToken = default);
+
+	Task<MemberFingerprintResponse> EnrollFingerprintAsync(
+		Guid memberId,
+		EnrollFingerprintRequest request,
+		CancellationToken cancellationToken = default);
 }

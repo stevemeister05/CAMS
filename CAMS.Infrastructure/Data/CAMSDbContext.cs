@@ -32,6 +32,8 @@ public class CAMSDBContext
 
 	public DbSet<AttendanceQrSession> AttendanceQrSessions => Set<AttendanceQrSession>();
 
+	public DbSet<MemberFingerprint> MemberFingerprints => Set<MemberFingerprint>();
+
 	public async Task<IUnitOfWorkTransaction> BeginTransactionAsync(
 		CancellationToken cancellationToken = default)
 	{
@@ -46,6 +48,59 @@ public class CAMSDBContext
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
 		base.OnModelCreating(modelBuilder);
+
+		modelBuilder
+	.Entity<MemberFingerprint>(
+		entity =>
+		{
+			entity.ToTable(
+				"MemberFingerprints");
+
+
+			entity.HasKey(
+				fingerprint =>
+					fingerprint.Id);
+
+
+			entity.Property(
+					fingerprint =>
+						fingerprint.ProtectedTemplate)
+				.IsRequired();
+
+
+			entity.Property(
+					fingerprint =>
+						fingerprint.FingerLabel)
+				.HasMaxLength(
+					50);
+
+
+			entity.HasIndex(
+				fingerprint =>
+					fingerprint.MemberId);
+
+
+			entity.HasIndex(
+				fingerprint =>
+					new
+					{
+						fingerprint.MemberId,
+						fingerprint.IsActive
+					});
+
+
+			entity.HasOne(
+					fingerprint =>
+						fingerprint.Member)
+				.WithMany(
+					member =>
+						member.Fingerprints)
+				.HasForeignKey(
+					fingerprint =>
+						fingerprint.MemberId)
+				.OnDelete(
+					DeleteBehavior.Cascade);
+		});
 
 		modelBuilder.ApplyConfigurationsFromAssembly(
 			typeof(CAMSDBContext).Assembly);

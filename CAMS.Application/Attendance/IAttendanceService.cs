@@ -25,4 +25,7 @@ public interface IAttendanceService
 	Task<AttendanceResponse> RecordManualAttendanceAsync(
 		RecordManualAttendanceRequest request,
 		CancellationToken cancellationToken = default);
+
+	Task<IReadOnlyList<FingerprintReferenceResponse>> GetFingerprintReferencesAsync(
+		CancellationToken cancellationToken = default);
 }

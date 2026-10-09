@@ -102,6 +102,19 @@ public class AttendanceController : ControllerBase
 		return Ok(result);
 	}
 
+	[HttpGet("fingerprint/references")]
+	[Authorize(Roles = ApplicationRoles.AdministratorOrAttendanceStaff)]
+	public async Task<ActionResult<IReadOnlyList<FingerprintReferenceResponse>>> GetFingerprintReferences(
+		CancellationToken cancellationToken)
+	{
+		var result =
+			await _attendanceService
+				.GetFingerprintReferencesAsync(
+					cancellationToken);
+
+		return Ok(result);
+	}
+
 	private Guid GetCurrentMemberId()
 	{
 		var memberIdClaim =

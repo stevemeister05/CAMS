@@ -4,6 +4,7 @@ using CAMS.Application.Common.Clocking;
 using CAMS.Application.Common.Exceptions;
 using CAMS.Application.Common.Realtime;
 using CAMS.Application.Event;
+using CAMS.Application.Fingerprint;
 using CAMS.Application.Member;
 using CAMS.Domain.Entities;
 using CAMS.Domain.Enums;
@@ -21,6 +22,7 @@ public class AttendanceService : IAttendanceService
 	private readonly IApplicationClock _clock;
 	private readonly IAttendanceNotifier _attendanceNotifier;
 	private readonly IAttendanceWindowService _attendanceWindowService;
+	private readonly IFingerprintTemplateProtector _fingerprintTemplateProtector;
 
 	public AttendanceService(
 		IAttendanceRepository attendanceRepository,
@@ -30,7 +32,8 @@ public class AttendanceService : IAttendanceService
 		IUnitOfWork unitOfWork,
 		IApplicationClock clock,
 		IAttendanceNotifier attendanceNotifier,
-		IAttendanceWindowService attendanceWindowService)
+		IAttendanceWindowService attendanceWindowService,
+		IFingerprintTemplateProtector fingerprintTemplateProtector)
 	{
 		_attendanceRepository = attendanceRepository;
 		_qrSessionRepository = qrSessionRepository;
@@ -40,6 +43,7 @@ public class AttendanceService : IAttendanceService
 		_clock = clock;
 		_attendanceNotifier = attendanceNotifier;
 		_attendanceWindowService = attendanceWindowService;
+		_fingerprintTemplateProtector = fingerprintTemplateProtector;
 	}
 
 	public async Task<AttendancePageResponse> GetAttendanceByEventAsync(
@@ -307,7 +311,31 @@ public class AttendanceService : IAttendanceService
 			method: AttendanceMethod.Manual,
 			cancellationToken: cancellationToken);
 	}
-	
+
+	public async Task<IReadOnlyList<FingerprintReferenceResponse>> GetFingerprintReferencesAsync(
+		CancellationToken cancellationToken = default)
+	{
+		var fingerprints =
+			await _memberRepository
+				.GetActiveFingerprintsAsync(
+					cancellationToken);
+
+		return
+			fingerprints
+				.Select(
+					fingerprint =>
+						new FingerprintReferenceResponse
+						{
+							MemberId =
+								fingerprint.MemberId,
+
+							Template =
+								_fingerprintTemplateProtector
+									.Unprotect(
+										fingerprint.ProtectedTemplate)
+						})
+				.ToList();
+	}
 
 	// COMMON ATTENDANCE WORKFLOW
 	private async Task<AttendanceResponse>

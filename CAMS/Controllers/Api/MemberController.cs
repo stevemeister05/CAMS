@@ -170,4 +170,23 @@ public class MemberController : ControllerBase
 				member,
 				"Member deactivated successfully."));
 	}
+
+	[HttpPost(
+	"{memberId:guid}/fingerprint")]
+	public async Task<ActionResult<MemberFingerprintResponse>> EnrollFingerprint(
+		Guid memberId,
+		[FromBody] EnrollFingerprintRequest request,
+		CancellationToken cancellationToken)
+	{
+		var result =
+			await _memberService
+				.EnrollFingerprintAsync(
+					memberId,
+					request,
+					cancellationToken);
+
+		return Ok(ApiResponse<MemberFingerprintResponse>.Ok(
+            result,
+            "Fingerprint enrolled successfully."));
+	}
 }

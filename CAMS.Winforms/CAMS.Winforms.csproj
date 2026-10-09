@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CAMS.Application\CAMS.Application.csproj" />
+    <ProjectReference Include="..\ThirdParty\Futronic\ftrSDKHelper\ftrSDKHelper.vcxproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,4 +20,18 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Futronic\x64\" />
+  </ItemGroup>
+	<ItemGroup>
+		<None Update="Futronic\x64\FTRAPI.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<TargetPath>FTRAPI.dll</TargetPath>
+		</None>
+		<None Update="Futronic\x64\ftrScanAPI.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<TargetPath>ftrScanAPI.dll</TargetPath>
+		</None>
+	</ItemGroup>
 </Project>

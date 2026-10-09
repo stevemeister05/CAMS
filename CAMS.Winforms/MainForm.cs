@@ -1,6 +1,7 @@
 ﻿using CAMS.Winforms.Api;
 using CAMS.Winforms.Controls;
 using CAMS.Winforms.Fingerprint;
+using CAMS.Winforms.Forms;
 using CAMS.Winforms.Services;
 
 namespace CAMS.Winforms;
@@ -16,7 +17,14 @@ public partial class MainForm
 
 	private AttendanceApiService?
 		_attendanceService;
-		
+
+	private MemberApiService?
+		_memberService;
+
+
+	private IFingerprintEnroller?
+		_fingerprintEnroller;
+
 	private IFingerprintScanner?
 		_fingerprintScanner;
 
@@ -44,10 +52,12 @@ public partial class MainForm
 			new AttendanceApiService(
 				apiClient);
 
+		_memberService =
+			new MemberApiService(
+				apiClient);
 
-		_fingerprintScanner =
-				new UnavailableFingerprintScanner();
-
+		_fingerprintEnroller =
+			new FutronicFingerprintEnroller();
 
 		ShowTodayEvents();
 	}
@@ -184,5 +194,40 @@ public partial class MainForm
 		EventArgs e)
 	{
 		ShowTodayEvents();
+	}
+
+	private DialogResult ShowFingerprintEnrollment(
+		Guid memberId,
+		string memberName)
+	{
+		if (
+			_memberService is null ||
+			_fingerprintEnroller is null
+		)
+		{
+			MessageBox.Show(
+				this,
+				"Fingerprint enrollment is not available.",
+				"CAMS",
+				MessageBoxButtons.OK,
+				MessageBoxIcon.Warning);
+
+
+			return
+				DialogResult.Abort;
+		}
+
+
+		using var form =
+			new FingerprintEnrollmentForm(
+				memberId,
+				memberName,
+				_memberService,
+				_fingerprintEnroller);
+
+
+		return
+			form.ShowDialog(
+				this);
 	}
 }

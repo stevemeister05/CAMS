@@ -2,6 +2,7 @@
   <Configurations>
     <Platform Name="Any CPU" />
     <Platform Name="x64" />
+    <Platform Name="x86" />
   </Configurations>
   <Project Path="CAMS.Application/CAMS.Application.csproj" />
   <Project Path="CAMS.Domain/CAMS.Domain.csproj" />
@@ -10,4 +11,5 @@
     <Platform Solution="*|x64" Project="x64" />
   </Project>
   <Project Path="CAMS/CAMS.Web.csproj" />
+  <Project Path="ThirdParty/Futronic/ftrSDKHelper/ftrSDKHelper.vcxproj" Id="0395dc22-3519-467c-a4e8-b45200d22e32" />
 </Solution>

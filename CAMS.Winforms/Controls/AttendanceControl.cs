@@ -335,9 +335,9 @@ public partial class AttendanceControl
 
 		try
 		{
-			await _fingerprintScanner
-				.StartAsync(
-					_scannerCancellationTokenSource.Token);
+			//await _fingerprintScanner
+			//	.StartAsync(
+			//		_scannerCancellationTokenSource.Token);
 
 
 			UpdateScannerStatus();

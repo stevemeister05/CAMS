@@ -20,6 +20,12 @@ public class Member : BaseEntity
 
 	public ICollection<Attendance> Attendances { get; set; } = [];
 
+	public ICollection<MemberFingerprint> Fingerprints
+	{
+		get;
+		set;
+	} = [];
+
 	/// <summary>
 	/// Gets the member's full name in the format:
 	/// FirstName M. LastName

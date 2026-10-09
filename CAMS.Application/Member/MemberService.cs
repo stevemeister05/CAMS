@@ -3,7 +3,9 @@ using CAMS.Application.Common.Clocking;
 using CAMS.Application.Common.Exceptions;
 using CAMS.Application.Common.Pagination;
 using CAMS.Application.Common.Validation;
+using CAMS.Application.Fingerprint;
 using CAMS.Application.Member.DTOs;
+using CAMS.Domain.Entities;
 
 namespace CAMS.Application.Member;
 
@@ -12,15 +14,18 @@ public sealed class MemberService : IMemberService
 	private readonly IMemberRepository _memberRepository;
 	private readonly IUnitOfWork _unitOfWork;
 	private readonly IApplicationClock _clock;
+	private readonly IFingerprintTemplateProtector _fingerprintTemplateProtector;
 
 	public MemberService(
 		IMemberRepository memberRepository,
 		IUnitOfWork unitOfWork,
-		IApplicationClock clock)
+		IApplicationClock clock,
+		IFingerprintTemplateProtector fingerprintTemplateProtector)
 	{
 		_memberRepository = memberRepository;
 		_unitOfWork = unitOfWork;
 		_clock = clock;
+		_fingerprintTemplateProtector = fingerprintTemplateProtector;
 	}
 
 	public async Task<MemberResponse> GetByIdAsync(
@@ -274,6 +279,121 @@ public sealed class MemberService : IMemberService
 
 		return MapToResponse(
 			member);
+	}
+
+	public async Task<MemberFingerprintResponse> EnrollFingerprintAsync(
+		Guid memberId,
+		EnrollFingerprintRequest request,
+		CancellationToken cancellationToken = default)
+	{
+		if (memberId == Guid.Empty)
+		{
+			throw new ValidationException(
+				"Member ID is required.");
+		}
+
+
+		if (
+			request is null ||
+			request.Template.Length == 0
+		)
+		{
+			throw new ValidationException(
+				"Fingerprint template is required.");
+		}
+
+
+		var member =
+			await _memberRepository
+				.GetByIdAsync(
+					memberId,
+					cancellationToken);
+
+
+		if (member is null)
+		{
+			throw new NotFoundException(
+				"Member was not found.");
+		}
+
+
+		if (!member.IsActive)
+		{
+			throw new ConflictException(
+				"Fingerprint cannot be enrolled " +
+				"for an inactive member.");
+		}
+
+
+		var fingerLabel =
+			string.IsNullOrWhiteSpace(
+				request.FingerLabel)
+				? null
+				: request.FingerLabel.Trim();
+
+
+		var existingFingerprint =
+			await _memberRepository
+				.GetActiveFingerprintByMemberAsync(
+					memberId,
+					fingerLabel,
+					cancellationToken);
+
+
+		if (existingFingerprint is not null)
+		{
+			throw new ConflictException(
+				fingerLabel is null
+					? "This member already has an enrolled fingerprint."
+					: $"{fingerLabel} is already enrolled for this member.");
+		}
+
+
+		var fingerprint =
+			new MemberFingerprint
+			{
+				MemberId =
+					memberId,
+
+				ProtectedTemplate =
+					_fingerprintTemplateProtector
+						.Protect(
+							request.Template),
+
+				FingerLabel =
+					fingerLabel,
+
+				IsActive =
+					true
+			};
+
+
+		await _memberRepository
+			.AddFingerprintAsync(
+				fingerprint,
+				cancellationToken);
+
+
+		await _unitOfWork
+			.SaveChangesAsync(
+				cancellationToken);
+
+
+		return
+			new MemberFingerprintResponse
+			{
+				Id =
+					fingerprint.Id,
+
+				MemberId =
+					fingerprint.MemberId,
+
+				FingerLabel =
+					fingerprint.FingerLabel,
+
+				IsActive =
+					fingerprint.IsActive
+			};
 	}
 
 	private static void ValidateCreateRequest(
